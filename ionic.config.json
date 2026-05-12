@@ -1,0 +1,7 @@
+{
+  "name": "Trajectory-Front",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
