@@ -1,0 +1,15 @@
+<article class="metric-card" [class]="'metric-card metric-card--' + metric.tone">
+  <div class="metric-card__top">
+    <h2>{{ metric.title }}</h2>
+    <span class="metric-card__icon">
+      <ion-icon [name]="metric.icon" aria-hidden="true"></ion-icon>
+    </span>
+  </div>
+
+  <p class="metric-card__amount">{{ metric.amount }}</p>
+  <p class="metric-card__subtitle">{{ metric.subtitle }}</p>
+
+  <span class="metric-card__accent" aria-hidden="true">
+    <ion-icon [name]="metric.accentIcon"></ion-icon>
+  </span>
+</article>

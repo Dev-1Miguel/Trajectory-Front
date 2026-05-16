@@ -1,0 +1,138 @@
+:host {
+  display: block;
+  min-height: 100%;
+  border-right: 1px solid #e4e8f0;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(18px);
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  min-height: 100vh;
+  padding: 50px 16px 30px;
+}
+
+.sidebar__nav {
+  display: grid;
+  gap: 12px;
+  margin-top: 70px;
+}
+
+.nav-item,
+.profile {
+  border: 0;
+  background: transparent;
+  font: inherit;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  min-height: 76px;
+  padding: 0 24px;
+  border-radius: 10px;
+  color: #111827;
+  font-size: 18px;
+  line-height: 1;
+  text-align: left;
+}
+
+.nav-item ion-icon {
+  flex: 0 0 auto;
+  color: #56627c;
+  font-size: 27px;
+}
+
+.nav-item--active {
+  color: #4f3de5;
+  background: linear-gradient(135deg, rgba(85, 65, 241, 0.12), rgba(85, 65, 241, 0.05));
+}
+
+.nav-item--active ion-icon {
+  color: #5a45ec;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 0 12px;
+  color: #111827;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.profile--top {
+  min-height: 56px;
+}
+
+.profile__avatar {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  color: #6a5cf1;
+  background: #eceaff;
+}
+
+.profile__avatar ion-icon {
+  font-size: 29px;
+}
+
+.profile > ion-icon {
+  margin-left: auto;
+  color: #52607a;
+  font-size: 18px;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible {
+  outline: 3px solid rgba(85, 65, 241, 0.35);
+  outline-offset: 3px;
+}
+
+@media (max-width: 1020px) {
+  :host {
+    min-height: auto;
+    border-right: 0;
+    border-bottom: 1px solid #e4e8f0;
+  }
+
+  .sidebar {
+    position: static;
+    min-height: auto;
+    padding: 18px 20px;
+  }
+
+  .sidebar__nav {
+    display: flex;
+    gap: 8px;
+    margin-top: 18px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .sidebar__nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-item {
+    flex: 0 0 auto;
+    min-height: 48px;
+    padding: 0 16px;
+    font-size: 15px;
+  }
+
+  .nav-item ion-icon {
+    font-size: 20px;
+  }
+}

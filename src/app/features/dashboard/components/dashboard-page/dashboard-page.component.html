@@ -1,0 +1,35 @@
+<div class="dashboard">
+  <app-dashboard-sidebar [navigation]="navigation"></app-dashboard-sidebar>
+
+  <main class="dashboard__main">
+    <header class="dashboard__header">
+      <div>
+        <h1>¡Hola, Miguel! <span aria-hidden="true">👋</span></h1>
+        <p>Aquí tienes un resumen de tus finanzas</p>
+      </div>
+
+      <button class="notification-button" type="button" aria-label="Ver notificaciones">
+        <ion-icon name="notifications-outline" aria-hidden="true"></ion-icon>
+        <span aria-hidden="true"></span>
+      </button>
+    </header>
+
+    <section class="dashboard__metrics" aria-label="Resumen financiero">
+      <app-metric-card *ngFor="let metric of metrics" [metric]="metric"></app-metric-card>
+    </section>
+
+    <app-finance-alert></app-finance-alert>
+
+    <section class="dashboard__insights" aria-label="Detalle del mes">
+      <app-category-chart [categories]="categories"></app-category-chart>
+      <app-monthly-summary [items]="summary"></app-monthly-summary>
+    </section>
+
+    <app-movements-list [movements]="movements"></app-movements-list>
+
+    <button class="primary-action" type="button">
+      <ion-icon name="add-circle-outline" aria-hidden="true"></ion-icon>
+      <span>Registrar movimiento</span>
+    </button>
+  </main>
+</div>

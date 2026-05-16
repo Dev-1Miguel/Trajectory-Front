@@ -1,0 +1,23 @@
+<aside class="sidebar">
+  <div>
+    <button class="profile profile--top" type="button" aria-label="Abrir perfil de Miguel">
+      <span class="profile__avatar">
+        <ion-icon name="person" aria-hidden="true"></ion-icon>
+      </span>
+      <span>Miguel</span>
+      <ion-icon name="chevron-down-outline" aria-hidden="true"></ion-icon>
+    </button>
+
+    <nav class="sidebar__nav" aria-label="Navegacion principal">
+      <button
+        *ngFor="let item of navigation"
+        class="nav-item"
+        [class.nav-item--active]="item.active"
+        type="button"
+      >
+        <ion-icon [name]="item.icon" aria-hidden="true"></ion-icon>
+        <span>{{ item.label }}</span>
+      </button>
+    </nav>
+  </div>
+</aside>

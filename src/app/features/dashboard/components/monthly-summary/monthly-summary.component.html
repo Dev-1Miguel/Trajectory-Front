@@ -1,0 +1,15 @@
+<article class="summary-panel">
+  <h2>Resumen del mes</h2>
+
+  <dl>
+    <div *ngFor="let item of items" [class]="'summary-row summary-row--' + item.tone">
+      <dt>{{ item.label }}</dt>
+      <dd>{{ item.amount }}</dd>
+    </div>
+  </dl>
+
+  <div class="summary-panel__badge">
+    <ion-icon name="trending-up-outline" aria-hidden="true"></ion-icon>
+    <span>56% más que el mes pasado</span>
+  </div>
+</article>

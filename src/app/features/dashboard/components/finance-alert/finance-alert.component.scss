@@ -1,0 +1,75 @@
+.finance-alert {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  min-height: 118px;
+  padding: 22px 30px;
+  border: 1px solid #ccefd6;
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 17% 50%, rgba(36, 197, 105, 0.1), transparent 24%),
+    rgba(245, 255, 248, 0.9);
+}
+
+.finance-alert__icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  color: #ffffff;
+  background: linear-gradient(145deg, #13b86a, #079249);
+  box-shadow: 0 18px 28px rgba(10, 149, 77, 0.22);
+}
+
+.finance-alert__icon ion-icon {
+  font-size: 42px;
+}
+
+.finance-alert h2 {
+  margin: 0 0 6px;
+  color: #0b914b;
+  font-size: 23px;
+  font-weight: 800;
+}
+
+.finance-alert p,
+.finance-alert strong {
+  display: block;
+  margin: 0;
+  color: #223047;
+  font-size: 18px;
+  line-height: 1.45;
+}
+
+.finance-alert strong {
+  font-weight: 600;
+}
+
+.finance-alert button {
+  align-self: flex-start;
+  margin-left: auto;
+  border: 0;
+  color: #637089;
+  background: transparent;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.finance-alert button:focus-visible {
+  outline: 3px solid rgba(16, 146, 76, 0.25);
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .finance-alert {
+    align-items: flex-start;
+    padding: 22px;
+  }
+
+  .finance-alert__icon {
+    width: 54px;
+    height: 54px;
+  }
+}
