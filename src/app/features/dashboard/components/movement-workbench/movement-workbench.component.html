@@ -1,0 +1,70 @@
+<aside class="movement-workbench">
+  <ng-container [ngSwitch]="currentStep">
+    <section *ngSwitchCase="'income'" class="movement-form">
+      <app-movement-form [title]="title" [kind]="kind" (back)="openSelector.emit()" (save)="save.emit(kind)"></app-movement-form>
+    </section>
+
+    <section *ngSwitchCase="'expense'" class="movement-form">
+      <app-movement-form [title]="title" [kind]="kind" (back)="openSelector.emit()" (save)="save.emit(kind)"></app-movement-form>
+    </section>
+
+    <section *ngSwitchCase="'transfer'" class="movement-form">
+      <app-movement-form [title]="title" [kind]="kind" (back)="openSelector.emit()" (save)="save.emit(kind)"></app-movement-form>
+    </section>
+
+    <section
+      *ngSwitchCase="'success'"
+      class="success-panel"
+      [class.success-panel--income]="successSummary.accent === 'income'"
+      [class.success-panel--expense]="successSummary.accent === 'expense'"
+      [class.success-panel--transfer]="successSummary.accent === 'transfer'"
+    >
+      <div class="success-panel__seal" aria-hidden="true">
+        <ion-icon name="checkmark-outline"></ion-icon>
+      </div>
+      <h2>{{ successSummary.title }}</h2>
+      <p>{{ successSummary.message }}</p>
+
+      <div class="success-card">
+        <strong>{{ successSummary.rows[0] }}</strong>
+        <span class="success-card__amount">{{ successSummary.amount }}</span>
+        <span>{{ successSummary.rows[1] }}</span>
+        <span>{{ successSummary.rows[2] }}</span>
+      </div>
+
+      <button class="primary-button" type="button" (click)="showList.emit()">Ver movimientos</button>
+    </section>
+
+    <section *ngSwitchDefault class="movement-selector" aria-labelledby="selector-title">
+      <header class="workbench-header">
+        <button class="icon-button" type="button" aria-label="Volver a movimientos" (click)="showList.emit()">
+          <ion-icon name="arrow-back-outline" aria-hidden="true"></ion-icon>
+        </button>
+        <h2 id="selector-title">Nuevo movimiento</h2>
+      </header>
+
+      <p>Selecciona el tipo de movimiento</p>
+
+      <div class="movement-options">
+        <button
+          *ngFor="let option of movementOptions"
+          class="movement-option"
+          [class.movement-option--income]="option.kind === 'income'"
+          [class.movement-option--expense]="option.kind === 'expense'"
+          [class.movement-option--transfer]="option.kind === 'transfer'"
+          type="button"
+          (click)="openForm.emit(option.kind)"
+        >
+          <span class="movement-option__icon">
+            <ion-icon [name]="option.icon" aria-hidden="true"></ion-icon>
+          </span>
+          <span>
+            <strong>{{ option.title }}</strong>
+            <small>{{ option.subtitle }}</small>
+          </span>
+          <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+        </button>
+      </div>
+    </section>
+  </ng-container>
+</aside>

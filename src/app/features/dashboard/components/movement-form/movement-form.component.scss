@@ -1,0 +1,176 @@
+:host {
+  display: block;
+}
+
+.form-header {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) 40px;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.form-header h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 18px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 8px;
+  color: #111827;
+  background: transparent;
+}
+
+.icon-button ion-icon {
+  font-size: 22px;
+}
+
+.icon-button--save {
+  color: #31407f;
+}
+
+.form-fields {
+  display: grid;
+  gap: 16px;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+}
+
+.field > span:first-child {
+  color: #121827;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.field-control,
+.amount-control,
+.date-control,
+.note-control {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid #d6deeb;
+  border-radius: 8px;
+  color: #6b7893;
+  background: #ffffff;
+  box-shadow: 0 1px 1px rgba(15, 23, 42, 0.02);
+  font: inherit;
+}
+
+.field-control {
+  justify-content: space-between;
+  padding: 0 14px;
+  text-align: left;
+}
+
+.field-control ion-icon {
+  color: #1f2d44;
+  font-size: 18px;
+}
+
+.amount-control {
+  gap: 12px;
+  padding: 0 14px;
+  color: #52617d;
+}
+
+.amount-control span {
+  color: #33456c;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.amount-control input,
+.date-control input,
+.note-control {
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  color: #20293d;
+  background: transparent;
+  font: inherit;
+}
+
+.amount-control input {
+  width: 100%;
+  color: #9aa4b8;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.date-control {
+  gap: 12px;
+  padding: 0 14px;
+}
+
+.date-control ion-icon {
+  color: #34405f;
+  font-size: 20px;
+}
+
+.date-control input {
+  width: 100%;
+  color: #26334d;
+  font-weight: 700;
+}
+
+.note-control {
+  padding: 0 14px;
+}
+
+.note-control::placeholder {
+  color: #8793ad;
+}
+
+.save-button {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 50px;
+  margin-top: 24px;
+  border: 0;
+  border-radius: 8px;
+  color: #ffffff;
+  background: #563ee8;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: 0 14px 22px rgba(86, 62, 232, 0.22);
+}
+
+.save-button--expense {
+  background: #ef4455;
+  box-shadow: 0 14px 22px rgba(239, 68, 85, 0.18);
+}
+
+.save-button--transfer {
+  background: #2f6fe7;
+  box-shadow: 0 14px 22px rgba(47, 111, 231, 0.18);
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid rgba(86, 62, 232, 0.28);
+  outline-offset: 2px;
+}
+
+@media (min-width: 980px) {
+  .form-header h2 {
+    font-size: 20px;
+  }
+}

@@ -13,6 +13,9 @@
         *ngFor="let item of navigation"
         class="nav-item"
         [class.nav-item--active]="item.active"
+        [routerLink]="item.route || null"
+        routerLinkActive="nav-item--active"
+        [routerLinkActiveOptions]="{ exact: true }"
         type="button"
       >
         <ion-icon [name]="item.icon" aria-hidden="true"></ion-icon>

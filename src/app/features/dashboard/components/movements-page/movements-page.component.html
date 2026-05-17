@@ -1,0 +1,52 @@
+<main class="movements-page">
+  <section class="movements-heading" aria-labelledby="movements-title">
+    <div>
+      <h1 id="movements-title">Movimientos</h1>
+      <p>Controla tus ingresos, gastos y transferencias</p>
+    </div>
+
+    <button class="heading-action" type="button" (click)="openSelector()">
+      <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+      <span>Nuevo movimiento</span>
+    </button>
+  </section>
+
+  <section class="movements-layout" aria-label="Panel de movimientos">
+    <app-movement-board
+      [class.movement-board-host--covered]="currentStep !== 'list'"
+      [filters]="filters"
+      [selectedFilter]="selectedFilter"
+      [groups]="visibleGroups"
+      [bottomNavigation]="bottomNavigation"
+      (filterChange)="setFilter($event)"
+      (addMovement)="openSelector()"
+    ></app-movement-board>
+
+    <app-movement-workbench
+      [class.movement-workbench-host--open]="currentStep !== 'list'"
+      [currentStep]="currentStep"
+      [title]="activeFormTitle"
+      [kind]="formKind"
+      [movementOptions]="movementOptions"
+      [successSummary]="successSummary"
+      (showList)="showList()"
+      (openSelector)="openSelector()"
+      (openForm)="openForm($event)"
+      (save)="showSuccess($event)"
+    ></app-movement-workbench>
+  </section>
+
+  <footer class="movements-footer">
+    <div class="movement-legend" aria-label="Tipos de movimiento">
+      <strong>Tipos de movimiento:</strong>
+      <span><i class="legend-dot legend-dot--income"></i>Ingreso</span>
+      <span><i class="legend-dot legend-dot--expense"></i>Gasto</span>
+      <span><i class="legend-dot legend-dot--transfer"></i>Transferencia</span>
+    </div>
+
+    <p class="movement-tip">
+      <ion-icon name="bulb-outline" aria-hidden="true"></ion-icon>
+      <span><strong>Consejo:</strong> Manten tus movimientos actualizados para tener un mejor control de tus finanzas.</span>
+    </p>
+  </footer>
+</main>

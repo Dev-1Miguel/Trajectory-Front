@@ -1,0 +1,335 @@
+:host {
+  display: block;
+}
+
+.movements-board {
+  position: relative;
+  overflow: hidden;
+  min-height: 690px;
+  border: 1px solid #e1e7f0;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
+}
+
+.mobile-toolbar {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  min-height: 78px;
+  padding: 16px 22px;
+}
+
+.mobile-toolbar strong {
+  overflow: hidden;
+  color: #111827;
+  font-size: 18px;
+  font-weight: 900;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobile-toolbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 8px;
+  color: #172033;
+  background: transparent;
+}
+
+.icon-button ion-icon {
+  font-size: 22px;
+}
+
+.movement-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  padding: 0 22px 16px;
+  border-bottom: 1px solid #edf1f7;
+}
+
+.movement-tab {
+  min-width: 0;
+  min-height: 42px;
+  border: 0;
+  border-radius: 8px;
+  color: #4d5a77;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.movement-tab--active {
+  color: #563ee8;
+  background: #ece9ff;
+}
+
+.movement-groups {
+  padding-bottom: 110px;
+}
+
+.movement-group h2 {
+  margin: 0;
+  padding: 18px 24px;
+  color: #172033;
+  background: #f6f8fb;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.movement-group ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.movement-row {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr) minmax(90px, auto);
+  align-items: center;
+  gap: 16px;
+  min-height: 82px;
+  padding: 14px 22px;
+  border-bottom: 1px solid #edf1f7;
+}
+
+.movement-row:last-child {
+  border-bottom: 0;
+}
+
+.movement-row__icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+.movement-row__icon ion-icon {
+  font-size: 24px;
+}
+
+.movement-row__icon--income {
+  color: #10a05b;
+  background: #dff6e9;
+}
+
+.movement-row__icon--expense {
+  color: #e33643;
+  background: #fde3e7;
+}
+
+.movement-row__icon--expense ion-icon {
+  transform: rotate(45deg);
+}
+
+.movement-row__icon--transfer {
+  color: #2f6fe7;
+  background: #e6efff;
+}
+
+.movement-row__copy,
+.movement-row__meta {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.movement-row__copy strong {
+  overflow: hidden;
+  color: #111827;
+  font-size: 16px;
+  font-weight: 850;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.movement-row__copy small,
+.movement-row__meta time {
+  color: #53617d;
+  font-size: 13px;
+}
+
+.movement-row__meta {
+  justify-items: end;
+  text-align: right;
+}
+
+.movement-row__amount {
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.movement-row__amount--income {
+  color: #0c9b55;
+}
+
+.movement-row__amount--expense {
+  color: #e32d3d;
+}
+
+.movement-row__amount--transfer {
+  color: #2f6fe7;
+}
+
+.floating-action {
+  position: absolute;
+  right: 24px;
+  bottom: 28px;
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border: 0;
+  border-radius: 50%;
+  color: #ffffff;
+  background: #563ee8;
+  box-shadow: 0 18px 26px rgba(86, 62, 232, 0.3);
+}
+
+.floating-action ion-icon {
+  font-size: 32px;
+}
+
+.bottom-navigation {
+  display: none;
+}
+
+button {
+  cursor: pointer;
+  font: inherit;
+}
+
+button:focus-visible {
+  outline: 3px solid rgba(86, 62, 232, 0.28);
+  outline-offset: 2px;
+}
+
+@media (max-width: 720px) {
+  .movements-board {
+    min-height: 100vh;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .mobile-toolbar {
+    min-height: 70px;
+    padding: 14px 16px;
+  }
+
+  .movement-tabs {
+    gap: 4px;
+    padding: 0 16px 14px;
+  }
+
+  .movement-tab {
+    min-height: 38px;
+    padding: 0 4px;
+    font-size: 12px;
+  }
+
+  .movement-groups {
+    padding-bottom: 96px;
+  }
+
+  .movement-group h2 {
+    padding: 16px;
+    font-size: 13px;
+  }
+
+  .movement-row {
+    grid-template-columns: 48px minmax(0, 1fr) minmax(78px, auto);
+    gap: 12px;
+    min-height: 76px;
+    padding: 12px 16px;
+  }
+
+  .movement-row__icon {
+    width: 42px;
+    height: 42px;
+  }
+
+  .movement-row__copy strong,
+  .movement-row__amount {
+    font-size: 14px;
+  }
+
+  .movement-row__copy small,
+  .movement-row__meta time {
+    font-size: 12px;
+  }
+
+  .floating-action {
+    position: fixed;
+    right: 18px;
+    bottom: 78px;
+    z-index: 3;
+    width: 56px;
+    height: 56px;
+  }
+
+  .bottom-navigation {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    min-height: 66px;
+    border-top: 1px solid #edf1f7;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(14px);
+  }
+
+  .bottom-navigation__item {
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: 4px;
+    min-width: 0;
+    border: 0;
+    color: #687592;
+    background: transparent;
+    font-size: 10px;
+    font-weight: 750;
+  }
+
+  .bottom-navigation__item ion-icon {
+    font-size: 22px;
+  }
+
+  .bottom-navigation__item--active {
+    color: #563ee8;
+  }
+}
+
+@media (max-width: 360px) {
+  .movement-row {
+    grid-template-columns: 44px minmax(0, 1fr);
+  }
+
+  .movement-row__meta {
+    grid-column: 2;
+    justify-items: start;
+    text-align: left;
+  }
+
+  .movement-row__copy strong,
+  .movement-row__copy small {
+    white-space: normal;
+  }
+}

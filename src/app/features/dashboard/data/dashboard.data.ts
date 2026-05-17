@@ -1,8 +1,8 @@
 import { CategoryExpense, MetricCard, Movement, NavigationItem, SummaryItem } from '../models/dashboard.models';
 
 export const dashboardNavigation: NavigationItem[] = [
-  { label: 'Inicio', icon: 'home', active: true },
-  { label: 'Movimientos', icon: 'swap-horizontal' },
+  { label: 'Inicio', icon: 'home', route: '/home', active: true },
+  { label: 'Movimientos', icon: 'swap-horizontal', route: '/movimientos' },
   { label: 'Cuentas', icon: 'card-outline' },
   { label: 'Reportes', icon: 'bar-chart-outline' },
   { label: 'Presupuestos', icon: 'disc-outline' },
