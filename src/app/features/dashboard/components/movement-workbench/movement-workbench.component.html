@@ -1,15 +1,36 @@
 <aside class="movement-workbench">
   <ng-container [ngSwitch]="currentStep">
     <section *ngSwitchCase="'income'" class="movement-form">
-      <app-movement-form [title]="title" [kind]="kind" (back)="openSelector.emit()" (save)="save.emit(kind)"></app-movement-form>
+      <app-movement-form
+        [title]="title"
+        [kind]="kind"
+        [saving]="saving"
+        [errorMessage]="errorMessage"
+        (back)="openSelector.emit()"
+        (save)="save.emit($event)"
+      ></app-movement-form>
     </section>
 
     <section *ngSwitchCase="'expense'" class="movement-form">
-      <app-movement-form [title]="title" [kind]="kind" (back)="openSelector.emit()" (save)="save.emit(kind)"></app-movement-form>
+      <app-movement-form
+        [title]="title"
+        [kind]="kind"
+        [saving]="saving"
+        [errorMessage]="errorMessage"
+        (back)="openSelector.emit()"
+        (save)="save.emit($event)"
+      ></app-movement-form>
     </section>
 
     <section *ngSwitchCase="'transfer'" class="movement-form">
-      <app-movement-form [title]="title" [kind]="kind" (back)="openSelector.emit()" (save)="save.emit(kind)"></app-movement-form>
+      <app-movement-form
+        [title]="title"
+        [kind]="kind"
+        [saving]="saving"
+        [errorMessage]="errorMessage"
+        (back)="openSelector.emit()"
+        (save)="save.emit($event)"
+      ></app-movement-form>
     </section>
 
     <section

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
@@ -30,6 +31,6 @@ import { MovementsListComponent } from './components/movements-list/movements-li
     MovementsListComponent,
   ],
   exports: [DashboardPageComponent, MovementsPageComponent],
-  imports: [CommonModule, IonicModule, RouterModule],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, RouterModule],
 })
 export class DashboardModule {}

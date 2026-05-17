@@ -4,11 +4,6 @@
       <h1 id="movements-title">Movimientos</h1>
       <p>Controla tus ingresos, gastos y transferencias</p>
     </div>
-
-    <button class="heading-action" type="button" (click)="openSelector()">
-      <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
-      <span>Nuevo movimiento</span>
-    </button>
   </section>
 
   <section class="movements-layout" aria-label="Panel de movimientos">
@@ -16,10 +11,13 @@
       [class.movement-board-host--covered]="currentStep !== 'list'"
       [filters]="filters"
       [selectedFilter]="selectedFilter"
-      [groups]="visibleGroups"
+      [groups]="movementGroups"
       [bottomNavigation]="bottomNavigation"
+      [loading]="isLoadingMovements"
+      [errorMessage]="movementError"
       (filterChange)="setFilter($event)"
       (addMovement)="openSelector()"
+      (retry)="loadMovements()"
     ></app-movement-board>
 
     <app-movement-workbench
@@ -29,10 +27,12 @@
       [kind]="formKind"
       [movementOptions]="movementOptions"
       [successSummary]="successSummary"
+      [saving]="isSavingMovement"
+      [errorMessage]="saveError"
       (showList)="showList()"
       (openSelector)="openSelector()"
       (openForm)="openForm($event)"
-      (save)="showSuccess($event)"
+      (save)="saveMovement($event)"
     ></app-movement-workbench>
   </section>
 

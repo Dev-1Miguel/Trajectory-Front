@@ -19,15 +19,18 @@ export class MovementBoardComponent {
   @Input({ required: true }) selectedFilter: MovementFilter['id'] = 'all';
   @Input({ required: true }) groups: MovementGroup[] = [];
   @Input({ required: true }) bottomNavigation: BottomNavigationItem[] = [];
+  @Input() loading = false;
+  @Input() errorMessage = '';
 
   @Output() filterChange = new EventEmitter<MovementFilter['id']>();
   @Output() addMovement = new EventEmitter<void>();
+  @Output() retry = new EventEmitter<void>();
 
   trackByLabel(_: number, group: MovementGroup): string {
     return group.label;
   }
 
   trackByMovement(_: number, movement: MovementEntry): string {
-    return `${movement.title}-${movement.time}`;
+    return movement.id ? String(movement.id) : `${movement.title}-${movement.time}`;
   }
 }

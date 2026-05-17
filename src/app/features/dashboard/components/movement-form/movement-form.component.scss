@@ -2,6 +2,10 @@
   display: block;
 }
 
+.movement-form-shell {
+  display: block;
+}
+
 .form-header {
   display: grid;
   grid-template-columns: 40px minmax(0, 1fr) 40px;
@@ -56,6 +60,7 @@
 .field-control,
 .amount-control,
 .date-control,
+.text-control,
 .note-control {
   display: flex;
   align-items: center;
@@ -94,6 +99,7 @@
 
 .amount-control input,
 .date-control input,
+.text-control,
 .note-control {
   min-width: 0;
   border: 0;
@@ -124,6 +130,10 @@
   width: 100%;
   color: #26334d;
   font-weight: 700;
+}
+
+.text-control {
+  padding: 0 14px;
 }
 
 .note-control {
@@ -159,8 +169,20 @@
   box-shadow: 0 14px 22px rgba(47, 111, 231, 0.18);
 }
 
+.form-error {
+  margin: 18px 0 -6px;
+  color: #d92d3c;
+  font-size: 13px;
+  font-weight: 750;
+}
+
 button {
   cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
 }
 
 button:focus-visible,

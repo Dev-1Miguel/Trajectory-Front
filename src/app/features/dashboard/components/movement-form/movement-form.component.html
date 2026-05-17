@@ -1,75 +1,75 @@
-<header class="form-header">
-  <button class="icon-button" type="button" aria-label="Volver" (click)="back.emit()">
-    <ion-icon name="arrow-back-outline" aria-hidden="true"></ion-icon>
+<form class="movement-form-shell" [formGroup]="form" (ngSubmit)="submit()">
+  <header class="form-header">
+    <button class="icon-button" type="button" aria-label="Volver" (click)="back.emit()">
+      <ion-icon name="arrow-back-outline" aria-hidden="true"></ion-icon>
+    </button>
+    <h2>{{ title }}</h2>
+    <button class="icon-button icon-button--save" type="submit" aria-label="Guardar movimiento" [disabled]="saving">
+      <ion-icon name="save-outline" aria-hidden="true"></ion-icon>
+    </button>
+  </header>
+
+  <div class="form-fields" [class.form-fields--transfer]="isTransfer">
+    <label class="field">
+      <span>Titulo</span>
+      <input class="text-control" type="text" formControlName="titulo" maxlength="150" placeholder="Ej. Sueldo" />
+    </label>
+
+    <label *ngIf="isTransfer" class="field">
+      <span>Desde</span>
+      <input class="text-control" type="text" formControlName="cuentaOrigen" placeholder="Cuenta origen" />
+    </label>
+
+    <label *ngIf="isTransfer" class="field">
+      <span>Hacia</span>
+      <input class="text-control" type="text" formControlName="cuentaDestino" placeholder="Cuenta destino" />
+    </label>
+
+    <label class="field field--amount">
+      <span>Monto</span>
+      <span class="amount-control">
+        <span>$</span>
+        <input type="number" inputmode="decimal" step="0.01" min="0.01" formControlName="monto" aria-label="Monto" />
+      </span>
+    </label>
+
+    <label *ngIf="!isTransfer" class="field">
+      <span>{{ accountLabel }}</span>
+      <input class="text-control" type="text" formControlName="cuentaOrigen" [placeholder]="accountPlaceholder" />
+    </label>
+
+    <label class="field">
+      <span>Fecha</span>
+      <span class="date-control">
+        <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+        <input type="date" formControlName="fecha" aria-label="Fecha" />
+      </span>
+    </label>
+
+    <label class="field">
+      <span>Hora</span>
+      <span class="date-control">
+        <ion-icon name="time-outline" aria-hidden="true"></ion-icon>
+        <input type="time" formControlName="hora" aria-label="Hora" />
+      </span>
+    </label>
+
+    <label class="field">
+      <span>Nota (opcional)</span>
+      <input class="note-control" type="text" formControlName="descripcion" placeholder="Escribe una nota..." />
+    </label>
+  </div>
+
+  <p *ngIf="errorMessage" class="form-error">{{ errorMessage }}</p>
+
+  <button
+    class="save-button"
+    [class.save-button--income]="kind === 'income'"
+    [class.save-button--expense]="kind === 'expense'"
+    [class.save-button--transfer]="kind === 'transfer'"
+    type="submit"
+    [disabled]="form.invalid || saving"
+  >
+    {{ saving ? 'Guardando...' : buttonText }}
   </button>
-  <h2>{{ title }}</h2>
-  <button class="icon-button icon-button--save" type="button" aria-label="Guardar borrador">
-    <ion-icon name="save-outline" aria-hidden="true"></ion-icon>
-  </button>
-</header>
-
-<div class="form-fields" [class.form-fields--transfer]="isTransfer">
-  <div *ngIf="isTransfer" class="field">
-    <span>Desde</span>
-    <button class="field-control" type="button" aria-label="Seleccionar cuenta origen">
-      <span>Selecciona la cuenta origen</span>
-      <ion-icon name="chevron-down-outline" aria-hidden="true"></ion-icon>
-    </button>
-  </div>
-
-  <div *ngIf="isTransfer" class="field">
-    <span>Hacia</span>
-    <button class="field-control" type="button" aria-label="Seleccionar cuenta destino">
-      <span>Selecciona la cuenta destino</span>
-      <ion-icon name="chevron-down-outline" aria-hidden="true"></ion-icon>
-    </button>
-  </div>
-
-  <label class="field field--amount">
-    <span>Monto</span>
-    <span class="amount-control">
-      <span>$</span>
-      <input type="text" inputmode="decimal" value="0.00" aria-label="Monto" />
-    </span>
-  </label>
-
-  <div *ngIf="!isTransfer" class="field">
-    <span>Categoria</span>
-    <button class="field-control" type="button" aria-label="Seleccionar categoria">
-      <span>Selecciona una categoria</span>
-      <ion-icon name="chevron-down-outline" aria-hidden="true"></ion-icon>
-    </button>
-  </div>
-
-  <div *ngIf="!isTransfer" class="field">
-    <span>Cuenta</span>
-    <button class="field-control" type="button" aria-label="Seleccionar cuenta">
-      <span>Selecciona una cuenta</span>
-      <ion-icon name="chevron-down-outline" aria-hidden="true"></ion-icon>
-    </button>
-  </div>
-
-  <label class="field">
-    <span>Fecha</span>
-    <span class="date-control">
-      <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
-      <input type="text" value="17 de mayo de 2026" aria-label="Fecha" />
-    </span>
-  </label>
-
-  <label class="field">
-    <span>Nota (opcional)</span>
-    <input class="note-control" type="text" placeholder="Escribe una nota..." />
-  </label>
-</div>
-
-<button
-  class="save-button"
-  [class.save-button--income]="kind === 'income'"
-  [class.save-button--expense]="kind === 'expense'"
-  [class.save-button--transfer]="kind === 'transfer'"
-  type="button"
-  (click)="save.emit()"
->
-  {{ buttonText }}
-</button>
+</form>

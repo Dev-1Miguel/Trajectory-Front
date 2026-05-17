@@ -7,6 +7,7 @@ export interface MovementFilter {
 }
 
 export interface MovementEntry {
+  id?: number;
   title: string;
   description: string;
   amount: string;
@@ -32,6 +33,16 @@ export interface SuccessSummary {
   accent: MovementKind;
   rows: string[];
   amount: string;
+}
+
+export interface MovementFormValue {
+  kind: MovementKind;
+  titulo: string;
+  descripcion?: string;
+  monto: number;
+  cuentaOrigen?: string;
+  cuentaDestino?: string;
+  fechaMovimiento?: string;
 }
 
 export interface BottomNavigationItem {

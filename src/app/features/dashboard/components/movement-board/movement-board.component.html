@@ -28,7 +28,23 @@
     </button>
   </div>
 
-  <div class="movement-groups">
+  <div *ngIf="loading" class="movement-state">
+    <ion-icon name="sync-outline" aria-hidden="true"></ion-icon>
+    <strong>Cargando movimientos...</strong>
+  </div>
+
+  <div *ngIf="!loading && errorMessage" class="movement-state movement-state--error">
+    <ion-icon name="warning-outline" aria-hidden="true"></ion-icon>
+    <strong>{{ errorMessage }}</strong>
+    <button type="button" (click)="retry.emit()">Reintentar</button>
+  </div>
+
+  <div *ngIf="!loading && !errorMessage && groups.length === 0" class="movement-state">
+    <ion-icon name="file-tray-outline" aria-hidden="true"></ion-icon>
+    <strong>No hay movimientos para mostrar.</strong>
+  </div>
+
+  <div *ngIf="!loading && !errorMessage && groups.length > 0" class="movement-groups">
     <section *ngFor="let group of groups; trackBy: trackByLabel" class="movement-group" [attr.aria-label]="group.label">
       <h2>{{ group.label }}</h2>
 
