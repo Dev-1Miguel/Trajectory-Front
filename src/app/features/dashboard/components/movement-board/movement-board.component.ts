@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Router } from '@angular/router';
 
 import {
   BottomNavigationItem,
@@ -15,6 +16,8 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MovementBoardComponent {
+  private readonly router = inject(Router);
+
   @Input({ required: true }) filters: MovementFilter[] = [];
   @Input({ required: true }) selectedFilter: MovementFilter['id'] = 'all';
   @Input({ required: true }) groups: MovementGroup[] = [];
@@ -32,5 +35,26 @@ export class MovementBoardComponent {
 
   trackByMovement(_: number, movement: MovementEntry): string {
     return movement.id ? String(movement.id) : `${movement.title}-${movement.time}`;
+  }
+
+  navigateFromBottomNavigation(item: BottomNavigationItem, event: Event): void {
+    this.releaseNavigationFocus(event);
+
+    if (item.route) {
+      window.requestAnimationFrame(() => {
+        this.releaseNavigationFocus();
+        void this.router.navigateByUrl(item.route as string);
+      });
+    }
+  }
+
+  releaseNavigationFocus(event?: Event): void {
+    if (event?.currentTarget instanceof HTMLElement) {
+      event.currentTarget.blur();
+    }
+
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
   }
 }

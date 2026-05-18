@@ -30,7 +30,7 @@ import { MovementsListComponent } from './components/movements-list/movements-li
     MonthlySummaryComponent,
     MovementsListComponent,
   ],
-  exports: [DashboardPageComponent, MovementsPageComponent],
+  exports: [DashboardPageComponent, DashboardSidebarComponent, MovementsPageComponent],
   imports: [CommonModule, IonicModule, ReactiveFormsModule, RouterModule],
 })
 export class DashboardModule {}

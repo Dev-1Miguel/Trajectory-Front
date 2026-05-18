@@ -89,8 +89,9 @@
       *ngFor="let item of bottomNavigation"
       class="bottom-navigation__item"
       [class.bottom-navigation__item--active]="item.active"
-      [routerLink]="item.route || null"
       type="button"
+      (pointerdown)="releaseNavigationFocus($event)"
+      (click)="navigateFromBottomNavigation(item, $event)"
     >
       <ion-icon [name]="item.icon" aria-hidden="true"></ion-icon>
       <span>{{ item.label }}</span>

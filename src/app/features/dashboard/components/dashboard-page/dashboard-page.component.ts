@@ -6,6 +6,7 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
+import { Router } from '@angular/router';
 import { finalize, Subject, takeUntil } from 'rxjs';
 
 import { dashboardNavigation } from '../../data/dashboard.data';
@@ -51,6 +52,7 @@ const ECUADOR_TIME_ZONE = 'America/Guayaquil';
 export class DashboardPageComponent implements OnInit, OnDestroy {
   private readonly dashboardApiService = inject(DashboardApiService);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
+  private readonly router = inject(Router);
   private readonly destroy$ = new Subject<void>();
   private readonly currencyFormatter = new Intl.NumberFormat('es-EC', {
     style: 'currency',
@@ -66,7 +68,7 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
     { label: 'Movimientos', icon: 'swap-horizontal-outline', route: '/movimientos' },
     { label: 'Cuentas', icon: 'card-outline' },
     { label: 'Reportes', icon: 'bar-chart-outline' },
-    { label: 'Mas', icon: 'ellipsis-horizontal-outline' },
+    { label: 'Configuracion', icon: 'settings-outline' },
   ];
   metrics: MetricCard[] = [];
   categories: CategoryExpense[] = [];
@@ -110,6 +112,17 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
           this.summaryError = 'No se pudo cargar el resumen financiero.';
         },
       });
+  }
+
+  navigateFromBottomNavigation(item: NavigationItem, event: Event): void {
+    this.releaseNavigationFocus(event);
+
+    if (item.route) {
+      window.requestAnimationFrame(() => {
+        this.releaseNavigationFocus();
+        void this.router.navigateByUrl(item.route as string);
+      });
+    }
   }
 
   private applySummary(resumen: DashboardResumenResponse): void {
@@ -353,5 +366,15 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
     }).format(new Date());
 
     return label.charAt(0).toUpperCase() + label.slice(1);
+  }
+
+  releaseNavigationFocus(event?: Event): void {
+    if (event?.currentTarget instanceof HTMLElement) {
+      event.currentTarget.blur();
+    }
+
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
   }
 }

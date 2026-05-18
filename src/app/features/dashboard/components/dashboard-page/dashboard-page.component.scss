@@ -161,6 +161,16 @@ button:focus-visible {
   outline-offset: 3px;
 }
 
+@media (min-width: 1021px) {
+  .dashboard {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dashboard > app-dashboard-sidebar {
+    display: none;
+  }
+}
+
 @media (max-width: 1020px) {
   .dashboard {
     grid-template-columns: minmax(0, 1fr);

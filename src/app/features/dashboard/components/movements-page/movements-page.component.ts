@@ -93,7 +93,7 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
     { label: 'Movimientos', icon: 'swap-horizontal-outline', route: '/movimientos', active: true },
     { label: 'Cuentas', icon: 'wallet-outline' },
     { label: 'Reportes', icon: 'bar-chart-outline' },
-    { label: 'Mas', icon: 'ellipsis-horizontal-outline' },
+    { label: 'Configuracion', icon: 'settings-outline' },
   ];
 
   movementGroups: MovementGroup[] = [];
