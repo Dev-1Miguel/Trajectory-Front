@@ -20,6 +20,7 @@ import {
   MetricCard,
   Movement,
   MovementType,
+  NavigationItem,
   SummaryItem,
 } from '../../models/dashboard.models';
 import { DashboardApiService } from '../../services/dashboard-api.service';
@@ -60,6 +61,13 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
   });
 
   readonly navigation = dashboardNavigation;
+  readonly bottomNavigation: NavigationItem[] = [
+    { label: 'Inicio', icon: 'home-outline', route: '/home', active: true },
+    { label: 'Movimientos', icon: 'swap-horizontal-outline', route: '/movimientos' },
+    { label: 'Cuentas', icon: 'card-outline' },
+    { label: 'Reportes', icon: 'bar-chart-outline' },
+    { label: 'Mas', icon: 'ellipsis-horizontal-outline' },
+  ];
   metrics: MetricCard[] = [];
   categories: CategoryExpense[] = [];
   expenseCategories: ExpenseCategory[] = [];

@@ -44,9 +44,20 @@
 
     <app-movements-list [movements]="movements"></app-movements-list>
 
-    <button class="primary-action" type="button" routerLink="/movimientos">
-      <ion-icon name="add-circle-outline" aria-hidden="true"></ion-icon>
-      <span>Registrar movimiento</span>
-    </button>
   </main>
+
+  <nav class="dashboard__bottom-navigation" aria-label="Navegacion inferior">
+    <button
+      *ngFor="let item of bottomNavigation"
+      class="dashboard__bottom-navigation-item"
+      [class.dashboard__bottom-navigation-item--active]="item.active"
+      [routerLink]="item.route || null"
+      routerLinkActive="dashboard__bottom-navigation-item--active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      type="button"
+    >
+      <ion-icon [name]="item.icon" aria-hidden="true"></ion-icon>
+      <span>{{ item.label }}</span>
+    </button>
+  </nav>
 </div>
