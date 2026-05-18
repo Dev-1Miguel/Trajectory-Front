@@ -64,11 +64,16 @@
   background: #dbf5e4;
 }
 
+.movement-icon--transfer {
+  color: #2d72d8;
+  background: #dceafe;
+}
+
 .movement-icon ion-icon {
   font-size: 28px;
 }
 
-.movement-icon:not(.movement-icon--income) ion-icon {
+.movement-icon--expense ion-icon {
   transform: rotate(45deg);
 }
 
@@ -98,6 +103,17 @@
 
 .movement-amount--income {
   color: #079249;
+}
+
+.movement-amount--transfer {
+  color: #2d72d8;
+}
+
+.movements-panel__empty {
+  margin: 18px 0 8px;
+  color: #53617d;
+  font-size: 16px;
+  font-weight: 700;
 }
 
 .movements-panel__header button:focus-visible {

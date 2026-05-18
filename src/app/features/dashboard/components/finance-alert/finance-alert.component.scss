@@ -1,14 +1,39 @@
 .finance-alert {
+  --alert-color: #0b914b;
+  --alert-border: #ccefd6;
+  --alert-bg: rgba(245, 255, 248, 0.9);
+  --alert-radial: rgba(36, 197, 105, 0.1);
+  --alert-icon-bg: linear-gradient(145deg, #13b86a, #079249);
+  --alert-shadow: rgba(10, 149, 77, 0.22);
+
   display: flex;
   align-items: center;
   gap: 24px;
   min-height: 118px;
   padding: 22px 30px;
-  border: 1px solid #ccefd6;
+  border: 1px solid var(--alert-border);
   border-radius: 12px;
   background:
-    radial-gradient(circle at 17% 50%, rgba(36, 197, 105, 0.1), transparent 24%),
-    rgba(245, 255, 248, 0.9);
+    radial-gradient(circle at 17% 50%, var(--alert-radial), transparent 24%),
+    var(--alert-bg);
+}
+
+.finance-alert--danger {
+  --alert-color: #b4232f;
+  --alert-border: #f4c9cd;
+  --alert-bg: rgba(255, 247, 247, 0.9);
+  --alert-radial: rgba(203, 49, 62, 0.1);
+  --alert-icon-bg: linear-gradient(145deg, #df4350, #b4232f);
+  --alert-shadow: rgba(180, 35, 47, 0.2);
+}
+
+.finance-alert--neutral {
+  --alert-color: #46536d;
+  --alert-border: #d8e2f0;
+  --alert-bg: rgba(248, 250, 252, 0.92);
+  --alert-radial: rgba(70, 83, 109, 0.1);
+  --alert-icon-bg: linear-gradient(145deg, #66758f, #46536d);
+  --alert-shadow: rgba(70, 83, 109, 0.18);
 }
 
 .finance-alert__icon {
@@ -19,8 +44,8 @@
   height: 66px;
   border-radius: 50%;
   color: #ffffff;
-  background: linear-gradient(145deg, #13b86a, #079249);
-  box-shadow: 0 18px 28px rgba(10, 149, 77, 0.22);
+  background: var(--alert-icon-bg);
+  box-shadow: 0 18px 28px var(--alert-shadow);
 }
 
 .finance-alert__icon ion-icon {
@@ -29,7 +54,7 @@
 
 .finance-alert h2 {
   margin: 0 0 6px;
-  color: #0b914b;
+  color: var(--alert-color);
   font-size: 23px;
   font-weight: 800;
 }

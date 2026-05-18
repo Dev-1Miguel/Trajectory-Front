@@ -42,25 +42,6 @@
   font-size: 17px;
 }
 
-.heading-action {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  min-height: 46px;
-  padding: 0 18px;
-  border: 0;
-  border-radius: 8px;
-  color: #ffffff;
-  background: #563ee8;
-  font-weight: 800;
-  box-shadow: 0 14px 28px rgba(86, 62, 232, 0.2);
-}
-
-.heading-action ion-icon {
-  font-size: 20px;
-}
-
 .movements-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.12fr) minmax(336px, 0.78fr);

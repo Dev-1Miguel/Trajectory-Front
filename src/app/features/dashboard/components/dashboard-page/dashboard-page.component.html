@@ -4,8 +4,8 @@
   <main class="dashboard__main">
     <header class="dashboard__header">
       <div>
-        <h1>¡Hola, Miguel! <span aria-hidden="true">👋</span></h1>
-        <p>Aquí tienes un resumen de tus finanzas</p>
+        <h1>Hola, Miguel</h1>
+        <p>Aqui tienes un resumen de tus finanzas</p>
       </div>
 
       <button class="notification-button" type="button" aria-label="Ver notificaciones">
@@ -18,11 +18,28 @@
       <app-metric-card *ngFor="let metric of metrics" [metric]="metric"></app-metric-card>
     </section>
 
-    <app-finance-alert></app-finance-alert>
+    <div *ngIf="isLoadingSummary" class="dashboard-state" aria-live="polite">
+      <ion-icon name="sync-outline" aria-hidden="true"></ion-icon>
+      <strong>Cargando resumen financiero...</strong>
+    </div>
+
+    <div *ngIf="!isLoadingSummary && summaryError" class="dashboard-state dashboard-state--error" aria-live="polite">
+      <ion-icon name="warning-outline" aria-hidden="true"></ion-icon>
+      <strong>{{ summaryError }}</strong>
+      <button type="button" (click)="loadSummary()">Reintentar</button>
+    </div>
+
+    <app-finance-alert
+      [totalIngresos]="dashboardSummary.totalIngresos"
+      [totalGastos]="dashboardSummary.totalGastos"
+      [balance]="dashboardSummary.balance"
+    ></app-finance-alert>
 
     <section class="dashboard__insights" aria-label="Detalle del mes">
-      <app-category-chart [categories]="categories"></app-category-chart>
-      <app-monthly-summary [items]="summary"></app-monthly-summary>
+      <app-category-chart
+        [categories]="categories"
+        [expenseCategories]="expenseCategories"
+      ></app-category-chart>
     </section>
 
     <app-movements-list [movements]="movements"></app-movements-list>

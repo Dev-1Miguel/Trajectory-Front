@@ -80,6 +80,41 @@
   padding-bottom: 110px;
 }
 
+.movement-state {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 12px;
+  min-height: 360px;
+  padding: 32px 24px 120px;
+  color: #53617d;
+  text-align: center;
+}
+
+.movement-state ion-icon {
+  color: #563ee8;
+  font-size: 34px;
+}
+
+.movement-state strong {
+  color: #26344f;
+}
+
+.movement-state button {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 8px;
+  color: #ffffff;
+  background: #563ee8;
+  font-weight: 800;
+}
+
+.movement-state--error ion-icon,
+.movement-state--error strong {
+  color: #d92d3c;
+}
+
 .movement-group h2 {
   margin: 0;
   padding: 18px 24px;
@@ -188,7 +223,7 @@
   position: absolute;
   right: 24px;
   bottom: 28px;
-  display: grid;
+  display: none;
   place-items: center;
   width: 58px;
   height: 58px;
@@ -277,6 +312,7 @@ button:focus-visible {
     right: 18px;
     bottom: 78px;
     z-index: 3;
+    display: grid;
     width: 56px;
     height: 56px;
   }

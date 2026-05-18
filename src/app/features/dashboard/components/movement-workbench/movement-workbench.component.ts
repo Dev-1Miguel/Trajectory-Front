@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 
 import {
+  MovementFormValue,
   MovementKind,
   MovementOption,
   MovementStep,
@@ -20,9 +21,11 @@ export class MovementWorkbenchComponent {
   @Input({ required: true }) kind: MovementKind = 'income';
   @Input({ required: true }) movementOptions: MovementOption[] = [];
   @Input({ required: true }) successSummary!: SuccessSummary;
+  @Input() saving = false;
+  @Input() errorMessage = '';
 
   @Output() showList = new EventEmitter<void>();
   @Output() openSelector = new EventEmitter<void>();
   @Output() openForm = new EventEmitter<MovementKind>();
-  @Output() save = new EventEmitter<MovementKind>();
+  @Output() save = new EventEmitter<MovementFormValue>();
 }
