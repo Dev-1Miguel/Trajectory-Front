@@ -3,6 +3,8 @@ import { NonNullableFormBuilder, Validators } from '@angular/forms';
 
 import { MovementFormValue, MovementKind } from '../movements-page/movements-page.models';
 
+const ECUADOR_TIME_ZONE = 'America/Guayaquil';
+
 @Component({
   selector: 'app-movement-form',
   templateUrl: './movement-form.component.html',
@@ -70,7 +72,7 @@ export class MovementFormComponent {
       monto: value.monto,
       cuentaOrigen: this.toOptionalString(value.cuentaOrigen),
       cuentaDestino: this.toOptionalString(value.cuentaDestino),
-      fechaMovimiento: this.toIsoDate(value.fecha, value.hora),
+      fechaMovimiento: this.toEcuadorDateTime(value.fecha, value.hora),
     });
   }
 
@@ -79,23 +81,57 @@ export class MovementFormComponent {
     return trimmedValue.length > 0 ? trimmedValue : undefined;
   }
 
-  private toIsoDate(fecha: string, hora: string): string | undefined {
+  private toEcuadorDateTime(fecha: string, hora: string): string | undefined {
     if (!fecha || !hora) {
       return undefined;
     }
 
-    return new Date(`${fecha}T${hora}:00`).toISOString();
+    return `${fecha}T${hora}:00-05:00`;
   }
 
   private getTodayValue(): string {
-    return new Date().toISOString().slice(0, 10);
+    const parts = this.getEcuadorDateParts();
+
+    return `${parts.year}-${parts.month}-${parts.day}`;
   }
 
   private getCurrentTimeValue(): string {
-    const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const parts = this.getEcuadorDateParts();
 
-    return `${hours}:${minutes}`;
+    return `${parts.hour}:${parts.minute}`;
+  }
+
+  private getEcuadorDateParts(): Record<'year' | 'month' | 'day' | 'hour' | 'minute', string> {
+    const formatter = new Intl.DateTimeFormat('en-CA', {
+      timeZone: ECUADOR_TIME_ZONE,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+
+    const parts = formatter.formatToParts(new Date()).reduce(
+      (parts, part) => {
+        if (part.type in parts) {
+          parts[part.type as keyof typeof parts] = part.value;
+        }
+
+        return parts;
+      },
+      {
+        year: '',
+        month: '',
+        day: '',
+        hour: '',
+        minute: '',
+      },
+    );
+
+    return {
+      ...parts,
+      hour: parts.hour === '24' ? '00' : parts.hour,
+    };
   }
 }

@@ -1,23 +1,45 @@
-<article class="panel category-panel">
-  <h2>Gastos por categoría</h2>
+<div class="category-cards">
+  <article class="panel category-panel">
+    <h2>Resumen por tipo</h2>
 
-  <div class="category-panel__body">
-    <div class="donut" [style.background]="chartBackground" aria-label="Gráfico de gastos por categoría">
-      <span>35%</span>
-      <span>25%</span>
-      <span>20%</span>
-      <span>10%</span>
-      <span>10%</span>
+    <div class="category-panel__body">
+      <div class="donut" [style.background]="chartBackground" aria-label="Grafico por tipo de movimiento">
+        <span
+          *ngFor="let label of donutLabels"
+          class="donut__label"
+          [class.donut__label--hidden]="!label.visible"
+          [style.left.%]="label.left"
+          [style.top.%]="label.top"
+        >
+          {{ label.value }}
+        </span>
+      </div>
+
+      <ul class="legend">
+        <li *ngFor="let category of categories">
+          <span class="legend__dot" [style.background]="category.color" aria-hidden="true"></span>
+          <span>{{ category.label }}</span>
+          <strong>{{ category.amount }}</strong>
+        </li>
+      </ul>
     </div>
+  </article>
 
-    <ul class="legend">
-      <li *ngFor="let category of categories">
-        <span class="legend__dot" [style.background]="category.color" aria-hidden="true"></span>
-        <span>{{ category.label }}</span>
-        <strong>{{ category.amount }}</strong>
-      </li>
-    </ul>
-  </div>
+  <article class="panel expense-panel">
+    <h2>D&oacute;nde se gast&oacute; m&aacute;s</h2>
 
-  <button type="button">Ver todas las categorías</button>
-</article>
+    <p *ngIf="expenseCategories.length === 0" class="expense-empty">
+      No hay gastos registrados
+    </p>
+
+    <div *ngIf="expenseCategories.length > 0" class="expense-chart" aria-label="Grafico de gastos por titulo">
+      <div class="expense-bar" *ngFor="let expense of expenseCategories">
+        <span class="expense-bar__amount">{{ expense.amount }}</span>
+        <span class="expense-bar__track" aria-hidden="true">
+          <span class="expense-bar__fill" [style.height.%]="expense.percentage"></span>
+        </span>
+        <span class="expense-bar__label">{{ expense.label }}</span>
+      </div>
+    </div>
+  </article>
+</div>

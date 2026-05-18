@@ -1,15 +1,21 @@
-<section class="finance-alert" aria-label="Estado financiero">
+<section
+  *ngIf="!dismissed"
+  class="finance-alert"
+  [class.finance-alert--danger]="tone === 'danger'"
+  [class.finance-alert--neutral]="tone === 'neutral'"
+  aria-label="Estado financiero"
+>
   <span class="finance-alert__icon" aria-hidden="true">
-    <ion-icon name="checkmark"></ion-icon>
+    <ion-icon [name]="iconName"></ion-icon>
   </span>
 
   <div>
-    <h2>¡Vas bien!</h2>
-    <p>Tus ingresos son mayores que tus gastos este mes.</p>
-    <strong>Sigue así 💪</strong>
+    <h2>{{ title }}</h2>
+    <p>{{ message }}</p>
+    <strong>{{ detail }}</strong>
   </div>
 
-  <button type="button" aria-label="Cerrar alerta">
+  <button type="button" aria-label="Cerrar alerta" (click)="dismiss()">
     <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
   </button>
 </section>

@@ -76,9 +76,42 @@
 
 .dashboard__metrics {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
   gap: 24px;
   margin-bottom: 24px;
+}
+
+.dashboard-state {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 14px 18px;
+  border: 1px solid #d8e2f0;
+  border-radius: 8px;
+  color: #46536d;
+  background: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.dashboard-state ion-icon {
+  font-size: 22px;
+}
+
+.dashboard-state--error {
+  color: #b4232f;
+  border-color: #f4c9cd;
+  background: #fff7f7;
+}
+
+.dashboard-state button {
+  margin-left: auto;
+  border: 0;
+  color: #3f2ee8;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 800;
 }
 
 app-metric-card,
@@ -90,9 +123,7 @@ app-movements-list {
 }
 
 .dashboard__insights {
-  display: grid;
-  grid-template-columns: minmax(0, 1.42fr) minmax(280px, 0.98fr);
-  gap: 24px;
+  display: block;
   margin: 24px 0 30px;
 }
 
@@ -151,11 +182,6 @@ button:focus-visible {
 
   .dashboard__header h1 {
     font-size: 29px;
-  }
-
-  .dashboard__metrics,
-  .dashboard__insights {
-    grid-template-columns: 1fr;
   }
 
   .primary-action {

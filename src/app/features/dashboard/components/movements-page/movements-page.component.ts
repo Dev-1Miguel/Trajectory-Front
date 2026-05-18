@@ -47,6 +47,8 @@ const KIND_LABEL: Record<MovementKind, string> = {
   transfer: 'Transferencia',
 };
 
+const ECUADOR_TIME_ZONE = 'America/Guayaquil';
+
 @Component({
   selector: 'app-movements-page',
   templateUrl: './movements-page.component.html',
@@ -455,13 +457,15 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
   }
 
   private formatGroupLabel(date: Date): string {
-    const movementDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    const today = new Date();
-    const todayDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const movementParts = this.getEcuadorDateParts(date);
+    const todayParts = this.getEcuadorDateParts();
+    const movementDay = this.toLocalDateFromParts(movementParts);
+    const todayDay = this.toLocalDateFromParts(todayParts);
     const dayDifference = Math.round(
       (todayDay.getTime() - movementDay.getTime()) / 86_400_000,
     );
     const shortDate = new Intl.DateTimeFormat('es-EC', {
+      timeZone: ECUADOR_TIME_ZONE,
       day: 'numeric',
       month: 'long',
     }).format(date);
@@ -479,6 +483,7 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
 
   private formatLongDate(date: Date): string {
     return new Intl.DateTimeFormat('es-EC', {
+      timeZone: ECUADOR_TIME_ZONE,
       day: 'numeric',
       month: 'long',
       year: 'numeric',
@@ -486,11 +491,61 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
   }
 
   private formatTime(date: Date): string {
-    return new Intl.DateTimeFormat('es-EC', {
+    const formatter = new Intl.DateTimeFormat('en-CA', {
+      timeZone: ECUADOR_TIME_ZONE,
       hour: '2-digit',
       minute: '2-digit',
       hour12: false,
-    }).format(date);
+    });
+    const parts = formatter.formatToParts(date).reduce(
+      (dateParts, part) => {
+        if (part.type === 'hour' || part.type === 'minute') {
+          dateParts[part.type] = part.value;
+        }
+
+        return dateParts;
+      },
+      {
+        hour: '',
+        minute: '',
+      },
+    );
+
+    return `${parts.hour === '24' ? '00' : parts.hour}:${parts.minute}`;
+  }
+
+  private getEcuadorDateParts(date = new Date()): Record<'year' | 'month' | 'day', string> {
+    const formatter = new Intl.DateTimeFormat('en-CA', {
+      timeZone: ECUADOR_TIME_ZONE,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    });
+
+    return formatter.formatToParts(date).reduce(
+      (parts, part) => {
+        if (part.type in parts) {
+          parts[part.type as keyof typeof parts] = part.value;
+        }
+
+        return parts;
+      },
+      {
+        year: '',
+        month: '',
+        day: '',
+      },
+    );
+  }
+
+  private toLocalDateFromParts(
+    parts: Record<'year' | 'month' | 'day', string>,
+  ): Date {
+    return new Date(
+      Number(parts.year),
+      Number(parts.month) - 1,
+      Number(parts.day),
+    );
   }
 
   private isMovementKind(value: MovementStep): value is MovementKind {

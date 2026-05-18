@@ -29,6 +29,13 @@
   --card-badge: #fde1e5;
 }
 
+.metric-card--neutral {
+  --card-color: #46536d;
+  --card-border: #d8e2f0;
+  --card-bg: rgba(248, 250, 252, 0.92);
+  --card-badge: #e9eef6;
+}
+
 .metric-card__top {
   display: flex;
   align-items: center;

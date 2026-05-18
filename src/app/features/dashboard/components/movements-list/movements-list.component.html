@@ -1,13 +1,25 @@
 <section class="movements-panel">
   <div class="movements-panel__header">
-    <h2>Últimos movimientos</h2>
-    <button type="button">Ver todos</button>
+    <h2>Ultimos movimientos</h2>
+    <button type="button" routerLink="/movimientos">Ver todos</button>
   </div>
 
-  <ul class="movements-list">
+  <p *ngIf="movements.length === 0" class="movements-panel__empty">
+    No hay movimientos para este periodo.
+  </p>
+
+  <ul *ngIf="movements.length > 0" class="movements-list">
     <li *ngFor="let movement of movements">
-      <span class="movement-icon" [class.movement-icon--income]="movement.type === 'income'" aria-hidden="true">
-        <ion-icon [name]="movement.type === 'income' ? 'download-outline' : 'arrow-up-outline'"></ion-icon>
+      <span
+        class="movement-icon"
+        [class.movement-icon--income]="movement.type === 'income'"
+        [class.movement-icon--expense]="movement.type === 'expense'"
+        [class.movement-icon--transfer]="movement.type === 'transfer'"
+        aria-hidden="true"
+      >
+        <ion-icon
+          [name]="movement.type === 'income' ? 'download-outline' : movement.type === 'expense' ? 'arrow-up-outline' : 'swap-horizontal-outline'"
+        ></ion-icon>
       </span>
 
       <div class="movement-copy">
@@ -17,7 +29,11 @@
 
       <time>{{ movement.date }}</time>
 
-      <strong class="movement-amount" [class.movement-amount--income]="movement.type === 'income'">
+      <strong
+        class="movement-amount"
+        [class.movement-amount--income]="movement.type === 'income'"
+        [class.movement-amount--transfer]="movement.type === 'transfer'"
+      >
         {{ movement.amount }}
       </strong>
     </li>
