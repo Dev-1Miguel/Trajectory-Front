@@ -6,7 +6,7 @@ import {
   MovementEntry,
   MovementFilter,
   MovementGroup,
-} from '../movements-page/movements-page.models';
+} from '../../models/movements.models';
 
 @Component({
   selector: 'app-movement-board',

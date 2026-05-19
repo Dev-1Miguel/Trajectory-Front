@@ -6,7 +6,7 @@ import {
   MovementOption,
   MovementStep,
   SuccessSummary,
-} from '../movements-page/movements-page.models';
+} from '../../models/movements.models';
 
 @Component({
   selector: 'app-movement-workbench',

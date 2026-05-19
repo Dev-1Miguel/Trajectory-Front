@@ -9,7 +9,7 @@ import {
 import { Router } from '@angular/router';
 import { finalize, Subject, takeUntil } from 'rxjs';
 
-import { dashboardNavigation } from '../../data/dashboard.data';
+import { NavigationItem } from '../../../../shared/models/navigation-item.model';
 import {
   CategoryExpense,
   DashboardMovimientoApiRecord,
@@ -21,7 +21,6 @@ import {
   MetricCard,
   Movement,
   MovementType,
-  NavigationItem,
   SummaryItem,
 } from '../../models/dashboard.models';
 import { DashboardApiService } from '../../services/dashboard-api.service';
@@ -62,7 +61,6 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
     maximumFractionDigits: 0,
   });
 
-  readonly navigation = dashboardNavigation;
   readonly bottomNavigation: NavigationItem[] = [
     { label: 'Inicio', icon: 'home-outline', route: '/home', active: true },
     { label: 'Movimientos', icon: 'swap-horizontal-outline', route: '/movimientos' },

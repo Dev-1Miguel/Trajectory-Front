@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { dashboardNavigation } from './features/dashboard/data/dashboard.data';
+import { dashboardNavigation } from './shared/constants/navigation.constants';
 
 @Component({
   selector: 'app-root',

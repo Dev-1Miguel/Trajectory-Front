@@ -23,7 +23,7 @@ import {
   MovementOption,
   MovementStep,
   SuccessSummary,
-} from './movements-page.models';
+} from '../../models/movements.models';
 
 interface HydratedMovement {
   id?: number;

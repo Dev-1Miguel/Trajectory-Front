@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { NonNullableFormBuilder, Validators } from '@angular/forms';
 
-import { MovementFormValue, MovementKind } from '../movements-page/movements-page.models';
+import { MovementFormValue, MovementKind } from '../../models/movements.models';
 
 const ECUADOR_TIME_ZONE = 'America/Guayaquil';
 

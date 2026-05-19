@@ -1,13 +1,6 @@
 export type DashboardTone = 'success' | 'primary' | 'danger' | 'neutral';
 export type MovementType = 'income' | 'expense' | 'transfer';
 
-export interface NavigationItem {
-  label: string;
-  icon: string;
-  route?: string;
-  active?: boolean;
-}
-
 export interface MetricCard {
   title: string;
   amount: string;

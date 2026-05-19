@@ -1,4 +1,4 @@
-import { NavigationItem } from '../models/dashboard.models';
+import { NavigationItem } from '../models/navigation-item.model';
 
 export const dashboardNavigation: NavigationItem[] = [
   { label: 'Inicio', icon: 'home', route: '/home' },
