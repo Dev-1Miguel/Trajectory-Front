@@ -1,0 +1,38 @@
+<main class="movements-page">
+  <section class="movements-heading" aria-labelledby="movements-title">
+    <div>
+      <h1 id="movements-title">Movimientos</h1>
+      <p>Controla tus ingresos, gastos y transferencias</p>
+    </div>
+  </section>
+
+  <section class="movements-layout" aria-label="Panel de movimientos">
+    <app-movement-board
+      [class.movement-board-host--covered]="currentStep !== 'list'"
+      [filters]="filters"
+      [selectedFilter]="selectedFilter"
+      [groups]="movementGroups"
+      [bottomNavigation]="bottomNavigation"
+      [loading]="isLoadingMovements"
+      [errorMessage]="movementError"
+      (filterChange)="setFilter($event)"
+      (addMovement)="openSelector()"
+      (retry)="loadMovements()"
+    ></app-movement-board>
+
+    <app-movement-workbench
+      [class.movement-workbench-host--open]="currentStep !== 'list'"
+      [currentStep]="currentStep"
+      [title]="activeFormTitle"
+      [kind]="formKind"
+      [movementOptions]="movementOptions"
+      [successSummary]="successSummary"
+      [saving]="isSavingMovement"
+      [errorMessage]="saveError"
+      (showList)="showList()"
+      (openSelector)="openSelector()"
+      (openForm)="openForm($event)"
+      (save)="saveMovement($event)"
+    ></app-movement-workbench>
+  </section>
+</main>
