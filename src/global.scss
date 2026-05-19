@@ -31,6 +31,11 @@
   box-sizing: border-box;
 }
 
+body {
+  color: #111827;
+  --ion-text-color: #111827;
+}
+
 /**
  * Ionic Dark Mode
  * -----------------------------------------------------
@@ -40,7 +45,7 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import "@ionic/angular/css/palettes/dark.system.css";
+/* @import "@ionic/angular/css/palettes/dark.system.css"; */
 
 ion-toast.movement-tip-toast {
   --background: #111111;
