@@ -32,8 +32,7 @@
 }
 
 body {
-  color: #111827;
-  --ion-text-color: #111827;
+  color: var(--ion-text-color, #111827);
 }
 
 /**

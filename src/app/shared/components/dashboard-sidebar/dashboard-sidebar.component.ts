@@ -1,6 +1,24 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  HostListener,
+  Inject,
+  Input,
+} from '@angular/core';
+import type { ToggleCustomEvent } from '@ionic/angular';
 
 import { NavigationItem } from '../../models/navigation-item.model';
+
+type ProfileMenuAction = 'profile' | 'preferences' | 'security' | 'logout';
+
+interface ProfileMenuItem {
+  label: string;
+  icon: string;
+  action: ProfileMenuAction;
+}
 
 @Component({
   selector: 'app-dashboard-sidebar',
@@ -11,4 +29,85 @@ import { NavigationItem } from '../../models/navigation-item.model';
 })
 export class DashboardSidebarComponent {
   @Input({ required: true }) navigation: NavigationItem[] = [];
+
+  readonly profileMenuItems: ProfileMenuItem[] = [
+    { label: 'Mi perfil', icon: 'person-outline', action: 'profile' },
+    { label: 'Preferencias', icon: 'options-outline', action: 'preferences' },
+  ];
+
+  readonly profileMenuFooterItems: ProfileMenuItem[] = [
+    { label: 'Seguridad', icon: 'shield-checkmark-outline', action: 'security' },
+    { label: 'Cerrar sesion', icon: 'log-out-outline', action: 'logout' },
+  ];
+
+  profileMenuOpen = false;
+  darkModeEnabled = false;
+
+  private readonly darkModeClass = 'ion-palette-dark';
+
+  constructor(
+    private readonly changeDetectorRef: ChangeDetectorRef,
+    private readonly elementRef: ElementRef<HTMLElement>,
+    @Inject(DOCUMENT) private readonly document: Document,
+  ) {
+    this.darkModeEnabled = this.document.documentElement.classList.contains(
+      this.darkModeClass,
+    );
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target;
+    const profileMenu = this.elementRef.nativeElement.querySelector('.profile-menu');
+
+    if (!this.profileMenuOpen || !(target instanceof Node) || profileMenu?.contains(target)) {
+      return;
+    }
+
+    this.closeProfileMenu();
+  }
+
+  @HostListener('document:keydown.escape')
+  onDocumentEscape(): void {
+    this.closeProfileMenu();
+  }
+
+  toggleProfileMenu(event: Event): void {
+    event.stopPropagation();
+    this.profileMenuOpen = !this.profileMenuOpen;
+  }
+
+  selectProfileOption(_action: ProfileMenuAction): void {
+    this.closeProfileMenu();
+  }
+
+  toggleDarkMode(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.setDarkMode(!this.darkModeEnabled);
+  }
+
+  onDarkModeToggleClick(event: Event): void {
+    event.stopPropagation();
+  }
+
+  onDarkModeToggleChange(event: Event): void {
+    event.stopPropagation();
+    this.setDarkMode(Boolean((event as ToggleCustomEvent).detail.checked));
+  }
+
+  private closeProfileMenu(): void {
+    if (!this.profileMenuOpen) {
+      return;
+    }
+
+    this.profileMenuOpen = false;
+    this.changeDetectorRef.markForCheck();
+  }
+
+  private setDarkMode(isEnabled: boolean): void {
+    this.darkModeEnabled = isEnabled;
+    this.document.documentElement.classList.toggle(this.darkModeClass, isEnabled);
+    this.changeDetectorRef.markForCheck();
+  }
 }

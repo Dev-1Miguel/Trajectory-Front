@@ -1,5 +1,5 @@
 ion-app {
-  background: #ffffff;
+  background: var(--ion-background-color, #ffffff);
 }
 
 app-dashboard-sidebar.desktop-sidebar {

@@ -1,12 +1,83 @@
 <aside class="sidebar">
   <div>
-    <button class="profile profile--top" type="button" aria-label="Abrir perfil de Miguel">
-      <span class="profile__avatar">
-        <ion-icon name="person" aria-hidden="true"></ion-icon>
-      </span>
-      <span>Miguel</span>
-      <ion-icon name="chevron-down-outline" aria-hidden="true"></ion-icon>
-    </button>
+    <div class="profile-menu" [class.profile-menu--open]="profileMenuOpen">
+      <button
+        class="profile profile--top ion-activatable"
+        type="button"
+        aria-label="Abrir menu de perfil"
+        aria-controls="profile-dropdown"
+        [attr.aria-expanded]="profileMenuOpen"
+        (click)="toggleProfileMenu($event)"
+      >
+        <span class="profile__avatar">
+          <ion-icon name="person" aria-hidden="true"></ion-icon>
+        </span>
+        <span class="profile__name">Miguel</span>
+        <ion-icon class="profile__chevron" name="chevron-down-outline" aria-hidden="true"></ion-icon>
+        <ion-ripple-effect></ion-ripple-effect>
+      </button>
+
+      <div
+        id="profile-dropdown"
+        class="profile-dropdown"
+        role="menu"
+        [attr.aria-hidden]="!profileMenuOpen"
+      >
+        <button
+          *ngFor="let item of profileMenuItems"
+          class="profile-dropdown__item ion-activatable"
+          [class.profile-dropdown__item--danger]="item.action === 'logout'"
+          type="button"
+          role="menuitem"
+          (click)="selectProfileOption(item.action)"
+        >
+          <span class="profile-dropdown__icon">
+            <ion-icon [name]="item.icon" aria-hidden="true"></ion-icon>
+          </span>
+          <span>{{ item.label }}</span>
+          <ion-ripple-effect></ion-ripple-effect>
+        </button>
+
+        <div
+          class="profile-dropdown__item profile-dropdown__item--toggle ion-activatable"
+          role="menuitemcheckbox"
+          [attr.aria-checked]="darkModeEnabled"
+          tabindex="0"
+          (click)="toggleDarkMode($event)"
+          (keydown.enter)="toggleDarkMode($event)"
+          (keydown.space)="toggleDarkMode($event)"
+        >
+          <span class="profile-dropdown__icon">
+            <ion-icon name="moon-outline" aria-hidden="true"></ion-icon>
+          </span>
+          <span>Modo oscuro</span>
+          <ion-toggle
+            aria-label="Activar modo oscuro"
+            [checked]="darkModeEnabled"
+            (click)="onDarkModeToggleClick($event)"
+            (ionChange)="onDarkModeToggleChange($event)"
+          ></ion-toggle>
+          <ion-ripple-effect></ion-ripple-effect>
+        </div>
+
+        <div class="profile-dropdown__divider" aria-hidden="true"></div>
+
+        <button
+          *ngFor="let item of profileMenuFooterItems"
+          class="profile-dropdown__item ion-activatable"
+          [class.profile-dropdown__item--danger]="item.action === 'logout'"
+          type="button"
+          role="menuitem"
+          (click)="selectProfileOption(item.action)"
+        >
+          <span class="profile-dropdown__icon">
+            <ion-icon [name]="item.icon" aria-hidden="true"></ion-icon>
+          </span>
+          <span>{{ item.label }}</span>
+          <ion-ripple-effect></ion-ripple-effect>
+        </button>
+      </div>
+    </div>
 
     <nav class="sidebar__nav" aria-label="Navegacion principal">
       <button
