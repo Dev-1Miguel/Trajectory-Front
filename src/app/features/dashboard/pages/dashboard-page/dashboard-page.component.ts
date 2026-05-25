@@ -9,6 +9,7 @@ import {
 import { Router } from '@angular/router';
 import { finalize, Subject, takeUntil } from 'rxjs';
 
+import { AuthService } from '../../../../core/auth/auth.service';
 import { NavigationItem } from '../../../../shared/models/navigation-item.model';
 import {
   CategoryExpense,
@@ -49,6 +50,7 @@ const ECUADOR_TIME_ZONE = 'America/Guayaquil';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardPageComponent implements OnInit, OnDestroy {
+  private readonly authService = inject(AuthService);
   private readonly dashboardApiService = inject(DashboardApiService);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private readonly router = inject(Router);
@@ -76,8 +78,11 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
   dashboardSummary = EMPTY_DASHBOARD_SUMMARY;
   isLoadingSummary = false;
   summaryError = '';
+  greetingName = '';
 
   ngOnInit(): void {
+    this.greetingName = this.obtenerNombreUsuario();
+    this.cargarUsuarioActual();
     this.applySummary(EMPTY_DASHBOARD_SUMMARY);
     this.loadSummary();
   }
@@ -134,6 +139,36 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
     this.movements = resumen.ultimosMovimientos.map((movement) =>
       this.toMovement(movement),
     );
+  }
+
+  private cargarUsuarioActual(): void {
+    this.authService
+      .me()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.greetingName = this.obtenerNombreUsuario();
+          this.changeDetectorRef.markForCheck();
+        },
+        error: () => undefined,
+      });
+  }
+
+  private obtenerNombreUsuario(): string {
+    const usuario = this.authService.obtenerUsuario();
+    const nombreCompleto = usuario?.nombreCompleto?.trim();
+
+    if (nombreCompleto) {
+      return nombreCompleto.split(/\s+/)[0];
+    }
+
+    const correo = usuario?.correo?.trim();
+
+    if (correo) {
+      return correo.split('@')[0];
+    }
+
+    return '';
   }
 
   private createMetricCards(resumen: DashboardResumenResponse): MetricCard[] {

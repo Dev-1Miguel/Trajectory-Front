@@ -11,7 +11,7 @@ import {
 @Injectable({ providedIn: 'root' })
 export class DashboardApiService {
   private readonly http = inject(HttpClient);
-  private readonly dashboardResumenUrl = `${environment.apiBaseUrl}/dashboard/resumen`;
+  private readonly dashboardResumenUrl = `${environment.apiUrl}/dashboard/resumen`;
 
   obtenerResumen(
     query: DashboardResumenQuery = {},

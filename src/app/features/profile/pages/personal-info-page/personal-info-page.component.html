@@ -27,7 +27,7 @@
           [countries]="countries"
           [currencies]="currencies"
           [timeZones]="timeZones"
-          [saving]="saving"
+          [saving]="saving || loading"
           (save)="saveChanges($event)"
         ></app-personal-info-form>
 

@@ -33,7 +33,7 @@ export interface MovementPayload {
 @Injectable({ providedIn: 'root' })
 export class MovementsApiService {
   private readonly http = inject(HttpClient);
-  private readonly movementsUrl = `${environment.apiBaseUrl}/movimientos`;
+  private readonly movementsUrl = `${environment.apiUrl}/movimientos`;
 
   consultar(query: MovementQuery = {}): Observable<StoredProcedureResponse> {
     return this.http.get<StoredProcedureResponse>(this.movementsUrl, {
