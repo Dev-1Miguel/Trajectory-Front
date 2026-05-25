@@ -17,6 +17,13 @@ const routes: Routes = [
       ),
   },
   {
+    path: 'perfil',
+    loadChildren: () =>
+      import('./features/profile/profile.module').then(
+        (m) => m.ProfileModule,
+      ),
+  },
+  {
     path: '',
     redirectTo: 'home',
     pathMatch: 'full'

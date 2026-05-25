@@ -8,6 +8,7 @@ import {
   Inject,
   Input,
 } from '@angular/core';
+import { Router } from '@angular/router';
 import type { ToggleCustomEvent } from '@ionic/angular';
 
 import { NavigationItem } from '../../models/navigation-item.model';
@@ -48,6 +49,7 @@ export class DashboardSidebarComponent {
   constructor(
     private readonly changeDetectorRef: ChangeDetectorRef,
     private readonly elementRef: ElementRef<HTMLElement>,
+    private readonly router: Router,
     @Inject(DOCUMENT) private readonly document: Document,
   ) {
     this.darkModeEnabled = this.document.documentElement.classList.contains(
@@ -77,8 +79,12 @@ export class DashboardSidebarComponent {
     this.profileMenuOpen = !this.profileMenuOpen;
   }
 
-  selectProfileOption(_action: ProfileMenuAction): void {
+  selectProfileOption(action: ProfileMenuAction): void {
     this.closeProfileMenu();
+
+    if (action === 'profile') {
+      void this.router.navigateByUrl('/perfil/informacion-personal');
+    }
   }
 
   toggleDarkMode(event: Event): void {

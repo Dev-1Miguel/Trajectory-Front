@@ -1,0 +1,93 @@
+<form class="personal-info-form" [formGroup]="form" (ngSubmit)="submit()">
+  <div class="form-grid">
+    <label class="field">
+      <span>Nombre completo</span>
+      <input
+        class="field__control"
+        formControlName="fullName"
+        autocomplete="name"
+        placeholder="Tu nombre completo"
+        maxlength="80"
+      />
+      <small *ngIf="hasFieldError('fullName')" class="field__error">Ingresa tu nombre completo.</small>
+    </label>
+
+    <label class="field">
+      <span>Correo electrónico</span>
+      <input
+        class="field__control field__control--readonly"
+        formControlName="email"
+        type="email"
+        inputmode="email"
+        readonly
+        autocomplete="email"
+      />
+      <small class="field__hint">Este dato se podrá editar más adelante.</small>
+    </label>
+
+    <label class="field">
+      <span>País</span>
+      <ion-select
+        class="field__select"
+        fill="outline"
+        mode="md"
+        interface="popover"
+        formControlName="country"
+        aria-label="País"
+        placeholder="Selecciona tu país"
+      >
+        <ion-select-option *ngFor="let country of countries" [value]="country.value">
+          {{ country.label }}
+        </ion-select-option>
+      </ion-select>
+      <small *ngIf="hasFieldError('country')" class="field__error">Selecciona un país.</small>
+    </label>
+
+    <label class="field">
+      <span>Moneda principal</span>
+      <ion-select
+        class="field__select"
+        fill="outline"
+        mode="md"
+        interface="popover"
+        formControlName="primaryCurrency"
+        aria-label="Moneda principal"
+        placeholder="Selecciona tu moneda"
+      >
+        <ion-select-option *ngFor="let currency of currencies" [value]="currency.value">
+          {{ currency.label }}
+        </ion-select-option>
+      </ion-select>
+      <small *ngIf="hasFieldError('primaryCurrency')" class="field__error">Selecciona una moneda.</small>
+    </label>
+
+    <label class="field field--wide">
+      <span>Zona horaria</span>
+      <ion-select
+        class="field__select"
+        fill="outline"
+        mode="md"
+        interface="popover"
+        formControlName="timeZone"
+        aria-label="Zona horaria"
+        placeholder="Selecciona tu zona horaria"
+      >
+        <ion-select-option *ngFor="let timeZone of timeZones" [value]="timeZone.value">
+          {{ timeZone.label }}
+        </ion-select-option>
+      </ion-select>
+      <small *ngIf="hasFieldError('timeZone')" class="field__error">Selecciona una zona horaria.</small>
+    </label>
+  </div>
+
+  <div class="form-actions">
+    <ion-button
+      class="save-button"
+      type="submit"
+      [disabled]="form.invalid || saving"
+    >
+      <ion-icon name="save-outline" slot="start" aria-hidden="true"></ion-icon>
+      {{ saving ? 'Guardando...' : 'Guardar cambios' }}
+    </ion-button>
+  </div>
+</form>

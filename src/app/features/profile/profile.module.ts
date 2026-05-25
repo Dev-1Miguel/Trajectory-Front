@@ -1,0 +1,19 @@
+import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
+
+import { PersonalInfoFormComponent } from './components/personal-info-form/personal-info-form.component';
+import { ProfileAvatarComponent } from './components/profile-avatar/profile-avatar.component';
+import { PersonalInfoPageComponent } from './pages/personal-info-page/personal-info-page.component';
+import { ProfileRoutingModule } from './profile-routing.module';
+
+@NgModule({
+  declarations: [
+    PersonalInfoFormComponent,
+    PersonalInfoPageComponent,
+    ProfileAvatarComponent,
+  ],
+  imports: [CommonModule, IonicModule, ReactiveFormsModule, ProfileRoutingModule],
+})
+export class ProfileModule {}

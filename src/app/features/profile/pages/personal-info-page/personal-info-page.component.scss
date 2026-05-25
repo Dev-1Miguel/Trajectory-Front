@@ -1,0 +1,153 @@
+:host {
+  display: block;
+  min-height: 100%;
+  color: #111827;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.personal-info-page {
+  min-height: 100vh;
+  padding: 34px clamp(18px, 4vw, 48px);
+  background: #f6f8fc;
+}
+
+.personal-info-heading,
+.personal-info-card {
+  width: min(100%, 880px);
+  margin: 0 auto;
+}
+
+.personal-info-heading {
+  margin-bottom: 20px;
+}
+
+.personal-info-heading h1 {
+  margin: 0 0 8px;
+  color: #111827;
+  font-size: clamp(28px, 3vw, 38px);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.personal-info-heading p {
+  max-width: 620px;
+  margin: 0;
+  color: #53617d;
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.personal-info-card {
+  display: grid;
+  grid-template-columns: 124px minmax(0, 1fr);
+  align-items: start;
+  gap: 24px;
+  padding: 26px 30px;
+  border: 1px solid #e1e7f0;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
+  animation: card-enter 220ms ease both;
+}
+
+.personal-info-card__avatar {
+  display: grid;
+  justify-items: center;
+  padding-top: 2px;
+}
+
+.personal-info-card__content {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+
+.personal-info-card__intro {
+  display: grid;
+  gap: 5px;
+}
+
+.personal-info-card__intro span {
+  color: #563ee8;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.personal-info-card__intro strong {
+  overflow: hidden;
+  color: #111827;
+  font-size: 23px;
+  font-weight: 900;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.personal-info-feedback {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: -2px 0 0;
+  padding: 10px 12px;
+  border: 1px solid #bfebcf;
+  border-radius: 8px;
+  color: #0f8f4d;
+  background: #f0fbf4;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.personal-info-feedback ion-icon {
+  flex: 0 0 auto;
+  font-size: 20px;
+}
+
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 760px) {
+  .personal-info-page {
+    padding: 28px 18px;
+  }
+
+  .personal-info-card {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    padding: 22px 18px;
+  }
+
+  .personal-info-card__avatar {
+    padding-top: 0;
+  }
+
+  .personal-info-card__intro {
+    justify-items: center;
+    text-align: center;
+  }
+
+  .personal-info-card__intro strong {
+    white-space: normal;
+  }
+}
+
+@media (max-width: 420px) {
+  .personal-info-page {
+    padding: 24px 14px;
+  }
+
+  .personal-info-heading h1 {
+    font-size: 27px;
+  }
+}

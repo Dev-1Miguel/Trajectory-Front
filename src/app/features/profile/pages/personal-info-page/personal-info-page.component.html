@@ -1,0 +1,41 @@
+<ion-content [fullscreen]="true">
+  <main class="personal-info-page">
+    <section class="personal-info-heading" aria-labelledby="personal-info-title">
+      <div>
+        <h1 id="personal-info-title">Información personal</h1>
+        <p>Administra tus datos básicos para mantener tu perfil financiero al día.</p>
+      </div>
+    </section>
+
+    <section class="personal-info-card" aria-label="Datos basicos del usuario">
+      <div class="personal-info-card__avatar">
+        <app-profile-avatar
+          [fullName]="displayName"
+          [avatarUrl]="user.avatarUrl"
+          (changePhoto)="handleChangePhoto()"
+        ></app-profile-avatar>
+      </div>
+
+      <div class="personal-info-card__content">
+        <div class="personal-info-card__intro">
+          <span>Perfil personal</span>
+          <strong>{{ displayName }}</strong>
+        </div>
+
+        <app-personal-info-form
+          [form]="form"
+          [countries]="countries"
+          [currencies]="currencies"
+          [timeZones]="timeZones"
+          [saving]="saving"
+          (save)="saveChanges($event)"
+        ></app-personal-info-form>
+
+        <p *ngIf="feedbackMessage" class="personal-info-feedback" aria-live="polite">
+          <ion-icon name="checkmark-circle-outline" aria-hidden="true"></ion-icon>
+          <span>{{ feedbackMessage }}</span>
+        </p>
+      </div>
+    </section>
+  </main>
+</ion-content>
