@@ -1,0 +1,121 @@
+<ion-content class="auth-content" [fullscreen]="true">
+  <main class="auth-shell">
+    <section class="auth-card" aria-labelledby="register-title">
+      <div class="auth-brand" aria-label="Trajectory">
+        <span class="auth-brand__mark" aria-hidden="true">
+          <ion-icon name="trending-up-outline"></ion-icon>
+        </span>
+        <span class="auth-brand__name">Trajectory</span>
+      </div>
+
+      <header class="auth-header">
+        <h1 id="register-title">Crear cuenta</h1>
+        <p>Empieza a organizar tus finanzas</p>
+      </header>
+
+      <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <label class="auth-field">
+          <span>Nombre completo</span>
+          <span
+            class="auth-field__control"
+            [class.auth-field__control--invalid]="hasFieldError('fullName')"
+          >
+            <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
+            <input
+              formControlName="fullName"
+              type="text"
+              autocomplete="name"
+              placeholder="Tu nombre completo"
+            />
+          </span>
+          <small *ngIf="hasFieldError('fullName')" class="auth-field__error">Ingresa tu nombre completo.</small>
+        </label>
+
+        <label class="auth-field">
+          <span>Correo electrónico</span>
+          <span
+            class="auth-field__control"
+            [class.auth-field__control--invalid]="hasFieldError('email')"
+          >
+            <ion-icon name="mail-outline" aria-hidden="true"></ion-icon>
+            <input
+              formControlName="email"
+              type="email"
+              inputmode="email"
+              autocomplete="email"
+              placeholder="tu@email.com"
+            />
+          </span>
+          <small *ngIf="hasFieldError('email')" class="auth-field__error">{{ getEmailError() }}</small>
+        </label>
+
+        <label class="auth-field">
+          <span>Contraseña</span>
+          <span
+            class="auth-field__control"
+            [class.auth-field__control--invalid]="hasFieldError('password')"
+          >
+            <ion-icon name="lock-closed-outline" aria-hidden="true"></ion-icon>
+            <input
+              formControlName="password"
+              [type]="showPassword ? 'text' : 'password'"
+              autocomplete="new-password"
+              placeholder="Crea una contraseña"
+            />
+            <button
+              class="auth-field__toggle"
+              type="button"
+              [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+              (click)="togglePasswordVisibility()"
+            >
+              <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'" aria-hidden="true"></ion-icon>
+            </button>
+          </span>
+          <small *ngIf="hasFieldError('password')" class="auth-field__error">Ingresa una contraseña.</small>
+        </label>
+
+        <label class="auth-field">
+          <span>Confirmar contraseña</span>
+          <span
+            class="auth-field__control"
+            [class.auth-field__control--invalid]="hasFieldError('confirmPassword') || hasPasswordMismatch()"
+          >
+            <ion-icon name="shield-checkmark-outline" aria-hidden="true"></ion-icon>
+            <input
+              formControlName="confirmPassword"
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              autocomplete="new-password"
+              placeholder="Repite tu contraseña"
+            />
+            <button
+              class="auth-field__toggle"
+              type="button"
+              [attr.aria-label]="showConfirmPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+              (click)="toggleConfirmPasswordVisibility()"
+            >
+              <ion-icon [name]="showConfirmPassword ? 'eye-off-outline' : 'eye-outline'" aria-hidden="true"></ion-icon>
+            </button>
+          </span>
+          <small
+            *ngIf="hasFieldError('confirmPassword') || hasPasswordMismatch()"
+            class="auth-field__error"
+          >
+            {{ getConfirmPasswordError() }}
+          </small>
+        </label>
+
+        <ion-button class="auth-submit" expand="block" type="submit" [disabled]="form.invalid || loading">
+          {{ loading ? 'Creando cuenta...' : 'Crear cuenta' }}
+        </ion-button>
+
+        <p *ngIf="feedbackMessage" class="auth-feedback" aria-live="polite">
+          {{ feedbackMessage }}
+        </p>
+      </form>
+
+      <footer class="auth-switch">
+        <a routerLink="/auth/login">Ya tengo una cuenta</a>
+      </footer>
+    </section>
+  </main>
+</ion-content>

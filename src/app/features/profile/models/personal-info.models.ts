@@ -9,6 +9,7 @@ export interface PersonalInfo {
   fullName: string;
   email: string;
   country: string;
+  countryCode: string;
   primaryCurrency: string;
   timeZone: string;
   avatarUrl?: string;
@@ -20,6 +21,25 @@ export interface PersonalInfoFormValue {
   country: string;
   primaryCurrency: string;
   timeZone: string;
+}
+
+export interface PersonalInfoApiResponse {
+  nombreCompleto?: string;
+  correo?: string;
+  fotoPerfilUrl?: string;
+  pais?: string;
+  codigoPais?: string;
+  monedaPrincipal?: string;
+  zonaHoraria?: string;
+}
+
+export interface UpdatePersonalInfoPayload {
+  nombreCompleto: string;
+  fotoPerfilUrl: string;
+  pais: string;
+  codigoPais: string;
+  monedaPrincipal: string;
+  zonaHoraria: string;
 }
 
 export interface PersonalInfoFormControls {

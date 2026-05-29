@@ -5,12 +5,13 @@ import {
   Component,
   ElementRef,
   HostListener,
-  Inject,
   Input,
+  inject,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import type { ToggleCustomEvent } from '@ionic/angular';
 
+import { AuthService } from '../../../core/auth/auth.service';
 import { NavigationItem } from '../../models/navigation-item.model';
 
 type ProfileMenuAction = 'profile' | 'preferences' | 'security' | 'logout';
@@ -29,6 +30,12 @@ interface ProfileMenuItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardSidebarComponent {
+  private readonly authService = inject(AuthService);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly router = inject(Router);
+  private readonly document = inject(DOCUMENT);
+
   @Input({ required: true }) navigation: NavigationItem[] = [];
 
   readonly profileMenuItems: ProfileMenuItem[] = [
@@ -43,18 +50,15 @@ export class DashboardSidebarComponent {
 
   profileMenuOpen = false;
   darkModeEnabled = false;
+  profileName = 'Perfil';
 
   private readonly darkModeClass = 'ion-palette-dark';
 
-  constructor(
-    private readonly changeDetectorRef: ChangeDetectorRef,
-    private readonly elementRef: ElementRef<HTMLElement>,
-    private readonly router: Router,
-    @Inject(DOCUMENT) private readonly document: Document,
-  ) {
+  constructor() {
     this.darkModeEnabled = this.document.documentElement.classList.contains(
       this.darkModeClass,
     );
+    this.profileName = this.obtenerNombrePerfil();
   }
 
   @HostListener('document:click', ['$event'])
@@ -84,6 +88,12 @@ export class DashboardSidebarComponent {
 
     if (action === 'profile') {
       void this.router.navigateByUrl('/perfil/informacion-personal');
+      return;
+    }
+
+    if (action === 'logout') {
+      this.authService.logout();
+      void this.router.navigateByUrl('/auth/login');
     }
   }
 
@@ -115,5 +125,22 @@ export class DashboardSidebarComponent {
     this.darkModeEnabled = isEnabled;
     this.document.documentElement.classList.toggle(this.darkModeClass, isEnabled);
     this.changeDetectorRef.markForCheck();
+  }
+
+  private obtenerNombrePerfil(): string {
+    const usuario = this.authService.obtenerUsuario();
+    const nombreCompleto = usuario?.nombreCompleto?.trim();
+
+    if (nombreCompleto) {
+      return nombreCompleto.split(/\s+/)[0];
+    }
+
+    const correo = usuario?.correo?.trim();
+
+    if (correo) {
+      return correo.split('@')[0];
+    }
+
+    return 'Perfil';
   }
 }

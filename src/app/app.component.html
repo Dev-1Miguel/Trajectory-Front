@@ -1,5 +1,6 @@
-<ion-app>
+<ion-app [class.app-shell--auth]="isAuthRoute">
   <app-dashboard-sidebar
+    *ngIf="!isAuthRoute"
     class="desktop-sidebar"
     [navigation]="navigation"
   ></app-dashboard-sidebar>

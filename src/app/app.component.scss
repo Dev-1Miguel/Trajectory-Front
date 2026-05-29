@@ -17,8 +17,13 @@ app-dashboard-sidebar.desktop-sidebar {
     width: 256px;
   }
 
-  ion-router-outlet {
+  ion-app:not(.app-shell--auth) ion-router-outlet {
     left: 256px;
     width: calc(100% - 256px);
+  }
+
+  ion-app.app-shell--auth ion-router-outlet {
+    left: 0;
+    width: 100%;
   }
 }
