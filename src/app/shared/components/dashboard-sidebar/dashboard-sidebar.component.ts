@@ -40,7 +40,6 @@ export class DashboardSidebarComponent {
 
   readonly profileMenuItems: ProfileMenuItem[] = [
     { label: 'Mi perfil', icon: 'person-outline', action: 'profile' },
-    { label: 'Preferencias', icon: 'options-outline', action: 'preferences' },
   ];
 
   readonly profileMenuFooterItems: ProfileMenuItem[] = [
