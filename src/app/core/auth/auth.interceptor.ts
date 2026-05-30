@@ -9,7 +9,10 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);
   const token = authService.obtenerToken();
-  const authRequest = token
+  const omitirAuthorization =
+    request.url.endsWith('/auth/login') ||
+    request.url.endsWith('/auth/register');
+  const authRequest = token && !omitirAuthorization
     ? request.clone({
         setHeaders: {
           Authorization: `Bearer ${token}`,
@@ -20,7 +23,7 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
   return next(authRequest).pipe(
     catchError((error: unknown) => {
       if (error instanceof HttpErrorResponse && error.status === 401) {
-        authService.logout();
+        authService.clearSession();
 
         if (!router.url.startsWith('/auth/login')) {
           void router.navigateByUrl('/auth/login');
