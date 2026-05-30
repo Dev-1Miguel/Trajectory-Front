@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 
 import {
+  MovementCategoryOption,
   MovementFormValue,
   MovementKind,
   MovementOption,
@@ -21,6 +22,9 @@ export class MovementWorkbenchComponent {
   @Input({ required: true }) kind: MovementKind = 'income';
   @Input({ required: true }) movementOptions: MovementOption[] = [];
   @Input({ required: true }) successSummary!: SuccessSummary;
+  @Input() categories: MovementCategoryOption[] = [];
+  @Input() loadingCategories = false;
+  @Input() categoryErrorMessage = '';
   @Input() saving = false;
   @Input() errorMessage = '';
 

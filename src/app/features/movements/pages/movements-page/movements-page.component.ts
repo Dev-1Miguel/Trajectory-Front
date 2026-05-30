@@ -9,12 +9,21 @@ import {
 import { finalize, Subject, takeUntil } from 'rxjs';
 
 import {
+  CategoriesApiResult,
+  CategoriesApiService,
+} from '../../../categories/services/categories-api.service';
+import {
+  CategoryApiRecord,
+  CategoryMovementType,
+} from '../../../categories/models/category.models';
+import {
   MovementApiRecord,
   MovementPayload,
   MovementsApiService,
 } from '../../services/movements-api.service';
 import {
   BottomNavigationItem,
+  MovementCategoryOption,
   MovementEntry,
   MovementFilter,
   MovementFormValue,
@@ -33,6 +42,7 @@ interface HydratedMovement {
   date: Date;
   kind: MovementKind;
   accountLabel: string;
+  categoryName?: string;
 }
 
 const KIND_TO_API: Record<MovementKind, string> = {
@@ -58,6 +68,7 @@ const ECUADOR_TIME_ZONE = 'America/Guayaquil';
 })
 export class MovementsPageComponent implements OnInit, OnDestroy {
   private readonly movementsApiService = inject(MovementsApiService);
+  private readonly categoriesApiService = inject(CategoriesApiService);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
   readonly filters: MovementFilter[] = [
@@ -91,6 +102,7 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
   readonly bottomNavigation: BottomNavigationItem[] = [
     { label: 'Inicio', icon: 'home-outline', route: '/home' },
     { label: 'Movimientos', icon: 'swap-horizontal-outline', route: '/movimientos', active: true },
+    { label: 'Categor\u00edas', icon: 'pricetags-outline', route: '/categorias' },
     { label: 'Cuentas', icon: 'wallet-outline' },
     { label: 'Reportes', icon: 'bar-chart-outline' },
     { label: 'Configuracion', icon: 'settings-outline' },
@@ -102,8 +114,11 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
   lastSavedKind: MovementKind = 'income';
   isLoadingMovements = false;
   isSavingMovement = false;
+  isLoadingCategories = false;
   movementError = '';
   saveError = '';
+  categoryError = '';
+  movementCategories: MovementCategoryOption[] = [];
 
   private readonly destroy$ = new Subject<void>();
   private lastSavedSummary: SuccessSummary = {
@@ -174,6 +189,56 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
       });
   }
 
+  private loadCategoriesForMovement(kind: MovementKind): void {
+    if (kind === 'transfer') {
+      this.movementCategories = [];
+      this.isLoadingCategories = false;
+      this.categoryError = '';
+      this.changeDetectorRef.markForCheck();
+      return;
+    }
+
+    const requestedKind = kind;
+    const tipoMovimiento = KIND_TO_API[kind] as CategoryMovementType;
+
+    this.isLoadingCategories = true;
+    this.categoryError = '';
+    this.movementCategories = [];
+    this.changeDetectorRef.markForCheck();
+
+    this.categoriesApiService
+      .consultar(true)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => {
+          if (this.currentStep === requestedKind) {
+            this.isLoadingCategories = false;
+            this.changeDetectorRef.markForCheck();
+          }
+        }),
+      )
+      .subscribe({
+        next: (response) => {
+          if (this.currentStep !== requestedKind) {
+            return;
+          }
+
+          this.movementCategories = this.toMovementCategoryOptions(
+            response,
+            tipoMovimiento,
+          );
+        },
+        error: () => {
+          if (this.currentStep !== requestedKind) {
+            return;
+          }
+
+          this.movementCategories = [];
+          this.categoryError = 'No se pudieron cargar las categorias.';
+        },
+      });
+  }
+
   setFilter(filter: MovementFilter['id']): void {
     this.selectedFilter = filter;
     this.loadMovements();
@@ -187,12 +252,15 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
 
   openForm(kind: MovementKind): void {
     this.saveError = '';
+    this.categoryError = '';
     this.currentStep = kind;
+    this.loadCategoriesForMovement(kind);
     this.scrollToTop();
   }
 
   showList(): void {
     this.saveError = '';
+    this.categoryError = '';
     this.currentStep = 'list';
     this.scrollToTop();
   }
@@ -235,6 +303,7 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
       titulo: draft.titulo,
       descripcion: draft.descripcion,
       monto: draft.monto,
+      idCategoria: draft.kind === 'transfer' ? null : draft.idCategoria ?? null,
       cuentaOrigen: draft.kind === 'income' ? undefined : draft.cuentaOrigen,
       cuentaDestino: draft.kind === 'income' ? draft.cuentaOrigen : draft.cuentaDestino,
       fechaMovimiento: draft.fechaMovimiento,
@@ -274,6 +343,59 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
     }));
   }
 
+  private toMovementCategoryOptions(
+    response: CategoriesApiResult,
+    tipoMovimiento: CategoryMovementType,
+  ): MovementCategoryOption[] {
+    return this.extractCategoryRecords(response)
+      .map((record) => this.toMovementCategoryOption(record, tipoMovimiento))
+      .filter(
+        (category): category is MovementCategoryOption => category !== null,
+      )
+      .sort((left, right) => left.nombre.localeCompare(right.nombre, 'es'));
+  }
+
+  private extractCategoryRecords(
+    response: CategoriesApiResult,
+  ): CategoryApiRecord[] {
+    return Array.isArray(response)
+      ? response
+      : Array.isArray(response.data)
+        ? response.data
+        : [];
+  }
+
+  private toMovementCategoryOption(
+    record: CategoryApiRecord,
+    tipoMovimiento: CategoryMovementType,
+  ): MovementCategoryOption | null {
+    const isActive = this.toBoolean(this.getValue(record, ['Activo', 'activo']));
+
+    if (isActive === false) {
+      return null;
+    }
+
+    const recordType = this.toCategoryMovementType(
+      this.getText(record, ['TipoMovimiento', 'tipoMovimiento']),
+    );
+
+    if (recordType !== tipoMovimiento) {
+      return null;
+    }
+
+    const idCategoria = this.getNumber(record, ['IdCategoria', 'idCategoria', 'id']);
+    const nombre = this.getText(record, ['Nombre', 'nombre']);
+
+    if (idCategoria === undefined || !nombre) {
+      return null;
+    }
+
+    return {
+      idCategoria,
+      nombre,
+    };
+  }
+
   private toHydratedMovement(record: MovementApiRecord | undefined): HydratedMovement | null {
     if (!record) {
       return null;
@@ -283,6 +405,7 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
     const title = this.getText(record, ['titulo', 'Titulo', 'TITULO', 'nombre', 'Nombre']);
     const amount = this.getNumber(record, ['monto', 'Monto', 'MONTO']);
     const date = this.getDate(record, ['fechaMovimiento', 'FechaMovimiento', 'FECHAMOVIMIENTO']);
+    const categoryName = this.getText(record, ['nombreCategoria', 'NombreCategoria', 'NOMBRECATEGORIA']);
 
     if (!this.hasMovementData(record, movementKind, title, amount, date)) {
       return null;
@@ -295,25 +418,28 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
     return {
       id: this.getNumber(record, ['idMovimiento', 'IdMovimiento', 'IDMOVIMIENTO', 'id']),
       title: title ?? 'Movimiento',
-      description: `${KIND_LABEL[kind]} - ${accountLabel}`,
+      description: this.getMovementDescription(kind, categoryName, accountLabel),
       amount: amount ?? 0,
       date: movementDate,
       kind,
       accountLabel,
+      categoryName,
     };
   }
 
   private toHydratedMovementFromDraft(draft: MovementFormValue): HydratedMovement {
     const date = draft.fechaMovimiento ? new Date(draft.fechaMovimiento) : new Date();
     const accountLabel = this.getDraftAccountLabel(draft);
+    const categoryName = this.getDraftCategoryName(draft);
 
     return {
       title: draft.titulo,
-      description: `${KIND_LABEL[draft.kind]} - ${accountLabel}`,
+      description: this.getMovementDescription(draft.kind, categoryName, accountLabel),
       amount: draft.monto,
       date,
       kind: draft.kind,
       accountLabel,
+      categoryName,
     };
   }
 
@@ -372,12 +498,34 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
     return (kind === 'income' ? destination ?? origin : origin ?? destination) ?? 'Sin cuenta';
   }
 
+  private getMovementDescription(
+    kind: MovementKind,
+    categoryName: string | undefined,
+    accountLabel: string,
+  ): string {
+    if (categoryName) {
+      return [KIND_LABEL[kind], categoryName, accountLabel].filter(Boolean).join(' \u00b7 ');
+    }
+
+    return `${KIND_LABEL[kind]} - ${accountLabel}`;
+  }
+
   private getDraftAccountLabel(draft: MovementFormValue): string {
     if (draft.kind === 'transfer') {
       return [draft.cuentaOrigen, draft.cuentaDestino].filter(Boolean).join(' -> ') || 'Sin cuentas';
     }
 
     return draft.cuentaOrigen ?? 'Sin cuenta';
+  }
+
+  private getDraftCategoryName(draft: MovementFormValue): string | undefined {
+    if (draft.kind === 'transfer' || !draft.idCategoria) {
+      return undefined;
+    }
+
+    return this.movementCategories.find(
+      (category) => category.idCategoria === draft.idCategoria,
+    )?.nombre;
   }
 
   private hasMovementData(
@@ -411,17 +559,63 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
     return 'expense';
   }
 
-  private getText(record: MovementApiRecord, keys: string[]): string | undefined {
+  private toCategoryMovementType(
+    value: string | undefined,
+  ): CategoryMovementType | undefined {
+    const normalizedValue = (value ?? '')
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+
+    if (normalizedValue.includes('ingreso')) {
+      return 'Ingreso';
+    }
+
+    if (normalizedValue.includes('gasto')) {
+      return 'Gasto';
+    }
+
+    return undefined;
+  }
+
+  private toBoolean(value: unknown): boolean | undefined {
+    if (typeof value === 'boolean') {
+      return value;
+    }
+
+    if (typeof value === 'number') {
+      return value === 1;
+    }
+
+    if (typeof value === 'string') {
+      const normalizedValue = value.trim().toLowerCase();
+
+      if (['true', '1', 'activo'].includes(normalizedValue)) {
+        return true;
+      }
+
+      if (['false', '0', 'inactivo'].includes(normalizedValue)) {
+        return false;
+      }
+    }
+
+    return undefined;
+  }
+
+  private getText(record: Record<string, unknown>, keys: string[]): string | undefined {
     const value = this.getValue(record, keys);
 
     if (value === undefined || value === null) {
       return undefined;
     }
 
-    return String(value);
+    const text = String(value).trim();
+
+    return text.length > 0 ? text : undefined;
   }
 
-  private getNumber(record: MovementApiRecord, keys: string[]): number | undefined {
+  private getNumber(record: Record<string, unknown>, keys: string[]): number | undefined {
     const value = this.getValue(record, keys);
 
     if (typeof value === 'number' && Number.isFinite(value)) {
@@ -436,7 +630,7 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
     return undefined;
   }
 
-  private getDate(record: MovementApiRecord, keys: string[]): Date | undefined {
+  private getDate(record: Record<string, unknown>, keys: string[]): Date | undefined {
     const value = this.getValue(record, keys);
 
     if (typeof value !== 'string' && typeof value !== 'number') {
@@ -447,7 +641,7 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
     return Number.isNaN(date.getTime()) ? undefined : date;
   }
 
-  private getValue(record: MovementApiRecord, keys: string[]): unknown {
+  private getValue(record: Record<string, unknown>, keys: string[]): unknown {
     return keys.map((key) => record[key]).find((value) => value !== undefined);
   }
 

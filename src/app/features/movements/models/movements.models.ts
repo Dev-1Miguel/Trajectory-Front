@@ -40,9 +40,15 @@ export interface MovementFormValue {
   titulo: string;
   descripcion?: string;
   monto: number;
+  idCategoria?: number | null;
   cuentaOrigen?: string;
   cuentaDestino?: string;
   fechaMovimiento?: string;
+}
+
+export interface MovementCategoryOption {
+  idCategoria: number;
+  nombre: string;
 }
 
 export interface BottomNavigationItem {

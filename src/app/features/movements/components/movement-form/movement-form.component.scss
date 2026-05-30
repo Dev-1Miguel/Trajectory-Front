@@ -136,6 +136,10 @@
   padding: 0 14px;
 }
 
+.select-control {
+  cursor: pointer;
+}
+
 .note-control {
   padding: 0 14px;
 }
@@ -176,6 +180,10 @@
   font-weight: 750;
 }
 
+.form-error--compact {
+  margin: -4px 0 0;
+}
+
 button {
   cursor: pointer;
 }
@@ -186,7 +194,8 @@ button:disabled {
 }
 
 button:focus-visible,
-input:focus-visible {
+input:focus-visible,
+select:focus-visible {
   outline: 3px solid rgba(86, 62, 232, 0.28);
   outline-offset: 2px;
 }
