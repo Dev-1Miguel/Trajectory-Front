@@ -1,0 +1,18 @@
+<div class="profile-avatar">
+  <ion-avatar class="profile-avatar__image">
+    <img *ngIf="avatarUrl; else initialsTemplate" [src]="avatarUrl" [alt]="fullName" />
+    <ng-template #initialsTemplate>
+      <span>{{ initials }}</span>
+    </ng-template>
+  </ion-avatar>
+
+  <button
+    class="profile-avatar__action ion-activatable"
+    type="button"
+    aria-label="Cambiar foto de perfil"
+    (click)="changePhoto.emit()"
+  >
+    <ion-icon name="camera-outline" aria-hidden="true"></ion-icon>
+    <ion-ripple-effect></ion-ripple-effect>
+  </button>
+</div>
