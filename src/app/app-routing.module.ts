@@ -38,6 +38,14 @@ const routes: Routes = [
       ),
   },
   {
+    path: 'categorias',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./features/categories/categories.module').then(
+        (m) => m.CategoriesModule,
+      ),
+  },
+  {
     path: 'perfil',
     canActivate: [authGuard],
     loadChildren: () =>

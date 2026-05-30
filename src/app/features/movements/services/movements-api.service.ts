@@ -25,6 +25,7 @@ export interface MovementPayload {
   titulo: string;
   descripcion?: string;
   monto: number;
+  idCategoria?: number | null;
   cuentaOrigen?: string;
   cuentaDestino?: string;
   fechaMovimiento?: string;

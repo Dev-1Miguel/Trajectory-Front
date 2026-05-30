@@ -34,6 +34,25 @@
     </label>
 
     <label *ngIf="!isTransfer" class="field">
+      <span>Categoria</span>
+      <select
+        class="text-control select-control"
+        formControlName="idCategoria"
+      >
+        <option [ngValue]="0">
+          {{ loadingCategories ? 'Cargando categorias...' : 'Sin categoria' }}
+        </option>
+        <option *ngFor="let category of categories" [ngValue]="category.idCategoria">
+          {{ category.nombre }}
+        </option>
+      </select>
+    </label>
+
+    <p *ngIf="!isTransfer && categoryErrorMessage" class="form-error form-error--compact">
+      {{ categoryErrorMessage }}
+    </p>
+
+    <label *ngIf="!isTransfer" class="field">
       <span>{{ accountLabel }}</span>
       <input class="text-control" type="text" formControlName="cuentaOrigen" [placeholder]="accountPlaceholder" />
     </label>

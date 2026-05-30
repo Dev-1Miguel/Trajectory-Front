@@ -1,7 +1,20 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { NonNullableFormBuilder, Validators } from '@angular/forms';
 
-import { MovementFormValue, MovementKind } from '../../models/movements.models';
+import {
+  MovementCategoryOption,
+  MovementFormValue,
+  MovementKind,
+} from '../../models/movements.models';
 
 const ECUADOR_TIME_ZONE = 'America/Guayaquil';
 
@@ -12,11 +25,14 @@ const ECUADOR_TIME_ZONE = 'America/Guayaquil';
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MovementFormComponent {
+export class MovementFormComponent implements OnChanges {
   private readonly formBuilder = inject(NonNullableFormBuilder);
 
   @Input({ required: true }) title = '';
   @Input({ required: true }) kind: MovementKind = 'income';
+  @Input() categories: MovementCategoryOption[] = [];
+  @Input() loadingCategories = false;
+  @Input() categoryErrorMessage = '';
   @Input() saving = false;
   @Input() errorMessage = '';
 
@@ -26,12 +42,23 @@ export class MovementFormComponent {
   readonly form = this.formBuilder.group({
     titulo: ['', [Validators.required, Validators.maxLength(150)]],
     monto: [0, [Validators.required, Validators.min(0.01)]],
+    idCategoria: [0],
     cuentaOrigen: [''],
     cuentaDestino: [''],
     fecha: [this.getTodayValue(), Validators.required],
     hora: [this.getCurrentTimeValue(), Validators.required],
     descripcion: [''],
   });
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (
+      changes['kind'] ||
+      changes['categories'] ||
+      changes['loadingCategories']
+    ) {
+      this.syncCategoryControlState();
+    }
+  }
 
   get buttonText(): string {
     const labels: Record<MovementKind, string> = {
@@ -70,10 +97,32 @@ export class MovementFormComponent {
       titulo: value.titulo.trim(),
       descripcion: this.toOptionalString(value.descripcion),
       monto: value.monto,
+      idCategoria: this.kind === 'transfer' ? null : this.toCategoryId(value.idCategoria),
       cuentaOrigen: this.toOptionalString(value.cuentaOrigen),
       cuentaDestino: this.toOptionalString(value.cuentaDestino),
       fechaMovimiento: this.toEcuadorDateTime(value.fecha, value.hora),
     });
+  }
+
+  private toCategoryId(value: number): number | null {
+    return value > 0 ? value : null;
+  }
+
+  private syncCategoryControlState(): void {
+    const control = this.form.controls.idCategoria;
+
+    if (this.isTransfer) {
+      control.setValue(0, { emitEvent: false });
+      control.disable({ emitEvent: false });
+      return;
+    }
+
+    if (this.loadingCategories || this.categories.length === 0) {
+      control.disable({ emitEvent: false });
+      return;
+    }
+
+    control.enable({ emitEvent: false });
   }
 
   private toOptionalString(value: string): string | undefined {
