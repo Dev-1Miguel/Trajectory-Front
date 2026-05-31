@@ -282,13 +282,8 @@ export class CategoriesPage implements OnInit, OnDestroy {
             (category) => category.tipoMovimiento === this.selectedFilter,
           );
 
-    this.filteredCategories = [...categories].sort((left, right) => {
-      if (left.activo !== right.activo) {
-        return left.activo ? -1 : 1;
-      }
+    this.filteredCategories = [...categories];
 
-      return left.nombre.localeCompare(right.nombre, 'es');
-    });
     this.changeDetectorRef.markForCheck();
   }
 
