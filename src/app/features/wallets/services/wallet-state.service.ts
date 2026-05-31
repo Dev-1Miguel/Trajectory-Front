@@ -32,6 +32,7 @@ export class WalletStateService {
   private readonly loadingSubject = new BehaviorSubject(false);
 
   private loadInProgress = false;
+  private pendingRefresh = false;
 
   readonly wallets$ = this.walletsSubject.asObservable();
   readonly activeWallet$ = this.activeWalletSubject.asObservable().pipe(
@@ -56,10 +57,12 @@ export class WalletStateService {
 
   refreshWallets(): void {
     if (this.loadInProgress) {
+      this.pendingRefresh = true;
       return;
     }
 
     this.loadInProgress = true;
+    this.pendingRefresh = false;
     this.loadingSubject.next(true);
 
     this.walletsApiService
@@ -68,6 +71,10 @@ export class WalletStateService {
         finalize(() => {
           this.loadInProgress = false;
           this.loadingSubject.next(false);
+
+          if (this.pendingRefresh) {
+            this.refreshWallets();
+          }
         }),
       )
       .subscribe({
@@ -117,13 +124,25 @@ export class WalletStateService {
     const savedWallet = savedWalletId
       ? wallets.find((wallet) => wallet.idBilletera === savedWalletId)
       : undefined;
+    const currentWallet = this.getCurrentWallet(wallets);
     const nextWallet =
       savedWallet ??
+      currentWallet ??
       wallets.find((wallet) => wallet.esPrincipal) ??
       wallets[0];
 
     this.persistActiveWalletId(nextWallet.idBilletera);
     this.activeWalletSubject.next(nextWallet);
+  }
+
+  private getCurrentWallet(wallets: ActiveWallet[]): ActiveWallet | undefined {
+    const currentWallet = this.activeWalletSubject.value;
+
+    return currentWallet
+      ? wallets.find(
+          (wallet) => wallet.idBilletera === currentWallet.idBilletera,
+        )
+      : undefined;
   }
 
   private toActiveWallets(response: WalletsApiResult): ActiveWallet[] {

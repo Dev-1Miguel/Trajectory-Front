@@ -4,7 +4,7 @@
       <ion-icon name="arrow-back-outline" aria-hidden="true"></ion-icon>
     </button>
     <h2>{{ title }}</h2>
-    <button class="icon-button icon-button--save" type="submit" aria-label="Guardar movimiento" [disabled]="saving">
+    <button class="icon-button icon-button--save" type="submit" aria-label="Guardar movimiento" [disabled]="saving || loadingWallets">
       <ion-icon name="save-outline" aria-hidden="true"></ion-icon>
     </button>
   </header>
@@ -106,7 +106,7 @@
     [class.save-button--expense]="kind === 'expense'"
     [class.save-button--transfer]="kind === 'transfer'"
     type="submit"
-    [disabled]="form.invalid || saving"
+    [disabled]="form.invalid || saving || loadingWallets"
   >
     {{ saving ? 'Guardando...' : buttonText }}
   </button>

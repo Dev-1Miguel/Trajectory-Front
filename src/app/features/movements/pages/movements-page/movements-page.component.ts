@@ -29,6 +29,10 @@ import {
   MovementsApiService,
 } from '../../services/movements-api.service';
 import {
+  MovementChangePayload,
+  MovementStateService,
+} from '../../services/movement-state.service';
+import {
   BottomNavigationItem,
   MovementCategoryOption,
   MovementEntry,
@@ -77,6 +81,7 @@ const ECUADOR_TIME_ZONE = 'America/Guayaquil';
 })
 export class MovementsPageComponent implements OnInit, OnDestroy {
   private readonly movementsApiService = inject(MovementsApiService);
+  private readonly movementStateService = inject(MovementStateService);
   private readonly categoriesApiService = inject(CategoriesApiService);
   private readonly walletsApiService = inject(WalletsApiService);
   private readonly walletStateService = inject(WalletStateService);
@@ -151,6 +156,14 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
       .subscribe((idBilletera) => {
         this.activeWalletId = idBilletera;
         this.loadMovements();
+      });
+
+    this.movementStateService.movementChanged$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((change) => {
+        if (this.shouldRefreshForMovement(change)) {
+          this.loadMovements();
+        }
       });
   }
 
@@ -377,7 +390,6 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
           this.lastSavedKind = draft.kind;
           this.lastSavedSummary = this.createSuccessSummary(savedMovement);
           this.currentStep = 'success';
-          this.loadMovements();
           this.scrollToTop();
         },
         error: () => {
@@ -399,6 +411,10 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
       cuentaDestino: draft.kind === 'income' ? draft.cuentaOrigen : draft.cuentaDestino,
       fechaMovimiento: draft.fechaMovimiento,
     };
+  }
+
+  private shouldRefreshForMovement(change: MovementChangePayload): boolean {
+    return !this.activeWalletId || change.idBilletera === this.activeWalletId;
   }
 
   private toMovementGroups(records: MovementApiRecord[]): MovementGroup[] {

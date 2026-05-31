@@ -67,7 +67,6 @@ export class DashboardSidebarComponent {
       this.darkModeClass,
     );
     this.profileName = this.obtenerNombrePerfil();
-    this.walletStateService.refreshWallets();
   }
 
   @HostListener('document:click', ['$event'])

@@ -11,6 +11,10 @@ import { finalize, Subject, takeUntil } from 'rxjs';
 
 import { AuthService } from '../../../../core/auth/auth.service';
 import { WalletStateService } from '../../../wallets/services/wallet-state.service';
+import {
+  MovementChangePayload,
+  MovementStateService,
+} from '../../../movements/services/movement-state.service';
 import { NavigationItem } from '../../../../shared/models/navigation-item.model';
 import {
   CategoryExpense,
@@ -53,6 +57,7 @@ const ECUADOR_TIME_ZONE = 'America/Guayaquil';
 export class DashboardPageComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly walletStateService = inject(WalletStateService);
+  private readonly movementStateService = inject(MovementStateService);
   private readonly dashboardApiService = inject(DashboardApiService);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private readonly router = inject(Router);
@@ -96,6 +101,14 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
       .subscribe((idBilletera) => {
         this.activeWalletId = idBilletera;
         this.loadSummary(this.currentSummaryQuery);
+      });
+
+    this.movementStateService.movementChanged$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((change) => {
+        if (this.shouldRefreshForMovement(change)) {
+          this.loadSummary(this.currentSummaryQuery);
+        }
       });
   }
 
@@ -175,6 +188,10 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
     return this.activeWalletId
       ? { ...baseQuery, idBilletera: this.activeWalletId }
       : baseQuery;
+  }
+
+  private shouldRefreshForMovement(change: MovementChangePayload): boolean {
+    return !this.activeWalletId || change.idBilletera === this.activeWalletId;
   }
 
   private cargarUsuarioActual(): void {
