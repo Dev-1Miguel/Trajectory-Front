@@ -324,7 +324,7 @@ button:focus-visible {
     left: 0;
     z-index: 2;
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     min-height: 66px;
     border-top: 1px solid #edf1f7;
     background: rgba(255, 255, 255, 0.96);
@@ -340,12 +340,12 @@ button:focus-visible {
     border: 0;
     color: #687592;
     background: transparent;
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 750;
   }
 
   .bottom-navigation__item ion-icon {
-    font-size: 22px;
+    font-size: 21px;
   }
 
   .bottom-navigation__item--active {

@@ -20,11 +20,15 @@ export interface AuthUser {
 export interface AuthResponse {
   accessToken?: string;
   token?: string;
+  refreshToken?: string;
+  expiresAt?: number | string;
   user?: AuthUser;
   usuario?: AuthUser;
   data?: {
     accessToken?: string;
     token?: string;
+    refreshToken?: string;
+    expiresAt?: number | string;
     user?: AuthUser;
     usuario?: AuthUser;
     [key: string]: unknown;

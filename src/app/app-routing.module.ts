@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
-import { authGuard } from './core/auth/auth.guard';
+import { authGuard, authMatchGuard } from './core/auth/auth.guard';
 import { guestGuard } from './core/auth/guest.guard';
 
 const routes: Routes = [
@@ -13,6 +13,7 @@ const routes: Routes = [
   },
   {
     path: 'home',
+    canMatch: [authMatchGuard],
     canActivate: [authGuard],
     loadChildren: () =>
       import('./features/dashboard/dashboard.module').then(
@@ -31,6 +32,7 @@ const routes: Routes = [
   },
   {
     path: 'movimientos',
+    canMatch: [authMatchGuard],
     canActivate: [authGuard],
     loadChildren: () =>
       import('./features/movements/movements.module').then(
@@ -38,7 +40,26 @@ const routes: Routes = [
       ),
   },
   {
+    path: 'categorias',
+    canMatch: [authMatchGuard],
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./features/categories/categories.module').then(
+        (m) => m.CategoriesModule,
+      ),
+  },
+  {
+    path: 'billeteras',
+    canMatch: [authMatchGuard],
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./features/wallets/wallets.module').then(
+        (m) => m.WalletsModule,
+      ),
+  },
+  {
     path: 'perfil',
+    canMatch: [authMatchGuard],
     canActivate: [authGuard],
     loadChildren: () =>
       import('./features/profile/profile.module').then(
@@ -47,7 +68,7 @@ const routes: Routes = [
   },
   {
     path: 'cuentas',
-    redirectTo: 'home',
+    redirectTo: 'billeteras',
     pathMatch: 'full',
   },
   {
@@ -57,7 +78,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'auth/login',
     pathMatch: 'full'
   },
 ];

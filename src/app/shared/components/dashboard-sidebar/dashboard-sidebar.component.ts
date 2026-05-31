@@ -12,6 +12,10 @@ import { Router } from '@angular/router';
 import type { ToggleCustomEvent } from '@ionic/angular';
 
 import { AuthService } from '../../../core/auth/auth.service';
+import {
+  ActiveWallet,
+  WalletStateService,
+} from '../../../features/wallets/services/wallet-state.service';
 import { NavigationItem } from '../../models/navigation-item.model';
 
 type ProfileMenuAction = 'profile' | 'preferences' | 'security' | 'logout';
@@ -31,12 +35,17 @@ interface ProfileMenuItem {
 })
 export class DashboardSidebarComponent {
   private readonly authService = inject(AuthService);
+  private readonly walletStateService = inject(WalletStateService);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly router = inject(Router);
   private readonly document = inject(DOCUMENT);
 
   @Input({ required: true }) navigation: NavigationItem[] = [];
+
+  readonly wallets$ = this.walletStateService.wallets$;
+  readonly activeWalletId$ = this.walletStateService.activeWalletId$;
+  readonly loadingWallets$ = this.walletStateService.loading$;
 
   readonly profileMenuItems: ProfileMenuItem[] = [
     { label: 'Mi perfil', icon: 'person-outline', action: 'profile' },
@@ -91,9 +100,36 @@ export class DashboardSidebarComponent {
     }
 
     if (action === 'logout') {
+      this.walletStateService.clearActiveWallet();
       this.authService.logout();
       void this.router.navigateByUrl('/auth/login');
     }
+  }
+
+  selectActiveWallet(event: Event): void {
+    event.stopPropagation();
+
+    const select = event.target;
+
+    if (!(select instanceof HTMLSelectElement)) {
+      return;
+    }
+
+    const idBilletera = Number(select.value);
+
+    if (!Number.isFinite(idBilletera) || idBilletera <= 0) {
+      return;
+    }
+
+    this.walletStateService.selectActiveWallet(idBilletera);
+  }
+
+  onWalletSelectorClick(event: Event): void {
+    event.stopPropagation();
+  }
+
+  trackByWallet(_: number, wallet: ActiveWallet): number {
+    return wallet.idBilletera;
   }
 
   toggleDarkMode(event: Event): void {

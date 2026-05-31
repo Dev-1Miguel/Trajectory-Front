@@ -1,0 +1,159 @@
+<ion-content [fullscreen]="true">
+  <main class="categories-page">
+    <section class="categories-heading" aria-labelledby="categories-title">
+      <div>
+        <h1 id="categories-title">CATEGOR&Iacute;AS</h1>
+        <p>Organiza tus ingresos y gastos por tipo.</p>
+      </div>
+    </section>
+
+    <section class="categories-layout" aria-label="Panel de categorias">
+      <article class="categories-board">
+        <header class="card-header">
+          <div>
+            <strong>Categorias</strong>
+            <span>Listado general</span>
+          </div>
+          <button class="icon-button" type="button" aria-label="Recargar categorias" (click)="loadCategories()">
+            <ion-icon name="refresh-outline" aria-hidden="true"></ion-icon>
+          </button>
+        </header>
+
+        <div class="category-tabs" role="tablist" aria-label="Filtro de categorias">
+          <button
+            *ngFor="let filter of filters"
+            class="category-tab"
+            [class.category-tab--active]="filter.id === selectedFilter"
+            type="button"
+            role="tab"
+            [attr.aria-selected]="filter.id === selectedFilter"
+            (click)="setFilter(filter.id)"
+          >
+            {{ filter.label }}
+          </button>
+        </div>
+
+        <div *ngIf="isLoadingCategories" class="category-state">
+          <ion-icon name="sync-outline" aria-hidden="true"></ion-icon>
+          <strong>Cargando categorias...</strong>
+        </div>
+
+        <div *ngIf="!isLoadingCategories && categoryError" class="category-state category-state--error">
+          <ion-icon name="warning-outline" aria-hidden="true"></ion-icon>
+          <strong>{{ categoryError }}</strong>
+          <button type="button" (click)="loadCategories()">Reintentar</button>
+        </div>
+
+        <div *ngIf="!isLoadingCategories && !categoryError && filteredCategories.length === 0" class="category-state">
+          <ion-icon name="pricetags-outline" aria-hidden="true"></ion-icon>
+          <strong>No hay categorias para mostrar.</strong>
+        </div>
+
+        <ul *ngIf="!isLoadingCategories && !categoryError && filteredCategories.length > 0" class="category-list">
+          <li *ngFor="let category of filteredCategories; trackBy: trackByCategory" class="category-row">
+            <span
+              class="category-row__icon"
+              [class.category-row__icon--income]="category.tipoMovimiento === 'Ingreso'"
+              [class.category-row__icon--expense]="category.tipoMovimiento === 'Gasto'"
+            >
+              <ion-icon
+                [name]="category.tipoMovimiento === 'Ingreso' ? 'download-outline' : 'pricetag-outline'"
+                aria-hidden="true"
+              ></ion-icon>
+            </span>
+
+            <span class="category-row__copy">
+              <strong>{{ category.nombre }}</strong>
+              <small>
+                {{ category.tipoMovimiento }}
+                <ng-container *ngIf="category.fechaCreacion"> &middot; {{ category.fechaCreacion }}</ng-container>
+              </small>
+            </span>
+
+            <span
+              class="category-status"
+              [class.category-status--inactive]="!category.activo"
+            >
+              {{ category.activo ? 'Activa' : 'Inactiva' }}
+            </span>
+
+            <span class="category-actions">
+              <button class="icon-button" type="button" aria-label="Editar categoria" (click)="editCategory(category)">
+                <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
+              </button>
+              <button
+                class="state-button"
+                type="button"
+                [disabled]="isChangingState(category)"
+                (click)="changeCategoryState(category)"
+              >
+                {{ category.activo ? 'Desactivar' : 'Activar' }}
+              </button>
+            </span>
+          </li>
+        </ul>
+      </article>
+
+      <aside class="category-form-card" aria-labelledby="category-form-title">
+        <header class="form-header">
+          <div>
+            <h2 id="category-form-title">{{ formTitle }}</h2>
+            <p>{{ editingCategory ? 'Actualiza los datos de la categoria.' : 'Crea una categoria para movimientos.' }}</p>
+          </div>
+          <button
+            *ngIf="editingCategory"
+            class="icon-button"
+            type="button"
+            aria-label="Cancelar edicion"
+            (click)="cancelEdit()"
+          >
+            <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+          </button>
+        </header>
+
+        <form [formGroup]="form" (ngSubmit)="saveCategory()">
+          <label class="field">
+            <span>Nombre</span>
+            <input class="text-control" type="text" formControlName="nombre" placeholder="Ej. Comida" />
+            <small *ngIf="form.controls.nombre.touched && form.controls.nombre.invalid">
+              El nombre es requerido.
+            </small>
+          </label>
+
+          <label class="field">
+            <span>Tipo de movimiento</span>
+            <select class="text-control select-control" formControlName="tipoMovimiento">
+              <option value="">Selecciona un tipo</option>
+              <option value="Ingreso">Ingreso</option>
+              <option value="Gasto">Gasto</option>
+            </select>
+            <small *ngIf="form.controls.tipoMovimiento.touched && form.controls.tipoMovimiento.invalid">
+              El tipo de movimiento es requerido.
+            </small>
+          </label>
+
+          <p *ngIf="formError" class="form-message form-message--error">{{ formError }}</p>
+          <p *ngIf="formSuccess" class="form-message form-message--success">{{ formSuccess }}</p>
+
+          <button class="save-button" type="submit" [disabled]="form.invalid || isSavingCategory">
+            {{ isSavingCategory ? 'Guardando...' : editingCategory ? 'Actualizar categoria' : 'Crear categoria' }}
+          </button>
+        </form>
+      </aside>
+    </section>
+
+    <nav class="bottom-navigation" aria-label="Navegacion inferior">
+      <button
+        *ngFor="let item of bottomNavigation"
+        class="bottom-navigation__item"
+        [class.bottom-navigation__item--active]="item.active"
+        type="button"
+        (pointerdown)="releaseNavigationFocus($event)"
+        (click)="navigateFromBottomNavigation(item, $event)"
+      >
+        <ion-icon [name]="item.icon" aria-hidden="true"></ion-icon>
+        <span>{{ item.label }}</span>
+      </button>
+    </nav>
+  </main>
+</ion-content>

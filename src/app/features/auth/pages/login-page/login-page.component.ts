@@ -8,7 +8,7 @@ import {
 import { HttpErrorResponse } from '@angular/common/http';
 import { NonNullableFormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { finalize } from 'rxjs';
+import { finalize, switchMap } from 'rxjs';
 
 import { AuthService } from '../../../../core/auth/auth.service';
 import { ApiErrorService } from '../../../../core/http/api-error.service';
@@ -59,20 +59,21 @@ export class LoginPageComponent implements OnInit {
     this.authService
       .login(value.email.trim(), value.password)
       .pipe(
+        switchMap(() => this.authService.validarSesionActiva()),
         finalize(() => {
           this.loading = false;
           this.changeDetectorRef.markForCheck();
         }),
       )
       .subscribe({
-        next: () => {
-          if (!this.authService.estaAutenticado()) {
-            this.feedbackMessage = 'No se recibio un token de acceso.';
+        next: (sesionValida) => {
+          if (!sesionValida) {
+            this.feedbackMessage = 'No se pudo validar la sesion.';
             this.changeDetectorRef.markForCheck();
             return;
           }
 
-          void this.router.navigateByUrl('/home');
+          void this.router.navigateByUrl(this.obtenerRutaPosteriorAlLogin());
         },
         error: (error: unknown) => {
           this.feedbackMessage =
@@ -113,5 +114,19 @@ export class LoginPageComponent implements OnInit {
     }
 
     return '';
+  }
+
+  private obtenerRutaPosteriorAlLogin(): string {
+    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+
+    if (
+      returnUrl?.startsWith('/') &&
+      !returnUrl.startsWith('/auth') &&
+      !returnUrl.startsWith('//')
+    ) {
+      return returnUrl;
+    }
+
+    return '/home';
   }
 }
