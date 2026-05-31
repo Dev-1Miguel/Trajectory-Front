@@ -18,6 +18,7 @@ export interface MovementQuery {
   tipoMovimiento?: string;
   fechaInicio?: string;
   fechaFin?: string;
+  idBilletera?: number;
 }
 
 export interface MovementPayload {

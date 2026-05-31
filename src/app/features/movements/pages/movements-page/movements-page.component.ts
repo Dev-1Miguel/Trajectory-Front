@@ -21,9 +21,11 @@ import {
   WalletsApiResult,
   WalletsApiService,
 } from '../../../wallets/services/wallets-api.service';
+import { WalletStateService } from '../../../wallets/services/wallet-state.service';
 import {
   MovementApiRecord,
   MovementPayload,
+  MovementQuery,
   MovementsApiService,
 } from '../../services/movements-api.service';
 import {
@@ -77,6 +79,7 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
   private readonly movementsApiService = inject(MovementsApiService);
   private readonly categoriesApiService = inject(CategoriesApiService);
   private readonly walletsApiService = inject(WalletsApiService);
+  private readonly walletStateService = inject(WalletStateService);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
   readonly filters: MovementFilter[] = [
@@ -132,6 +135,8 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
   movementWallets: MovementWalletOption[] = [];
 
   private readonly destroy$ = new Subject<void>();
+  private activeWalletId: number | null = null;
+  private movementRequestId = 0;
   private lastSavedSummary: SuccessSummary = {
     title: 'Movimiento guardado',
     message: 'Tu movimiento se ha registrado correctamente.',
@@ -141,7 +146,12 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
   };
 
   ngOnInit(): void {
-    this.loadMovements();
+    this.walletStateService.activeWalletId$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((idBilletera) => {
+        this.activeWalletId = idBilletera;
+        this.loadMovements();
+      });
   }
 
   ngOnDestroy(): void {
@@ -172,32 +182,57 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
   }
 
   loadMovements(): void {
+    const requestId = ++this.movementRequestId;
+    const query = this.buildMovementQuery();
+
     this.isLoadingMovements = true;
     this.movementError = '';
     this.changeDetectorRef.markForCheck();
 
     this.movementsApiService
-      .consultar(
-        this.selectedFilter === 'all'
-          ? {}
-          : { tipoMovimiento: KIND_TO_API[this.selectedFilter] },
-      )
+      .consultar(query)
       .pipe(
         takeUntil(this.destroy$),
         finalize(() => {
+          if (requestId !== this.movementRequestId) {
+            return;
+          }
+
           this.isLoadingMovements = false;
           this.changeDetectorRef.markForCheck();
         }),
       )
       .subscribe({
         next: (response) => {
+          if (requestId !== this.movementRequestId) {
+            return;
+          }
+
           this.movementGroups = this.toMovementGroups(response.data);
         },
         error: () => {
+          if (requestId !== this.movementRequestId) {
+            return;
+          }
+
           this.movementGroups = [];
           this.movementError = 'No se pudieron cargar los movimientos.';
         },
       });
+  }
+
+  private buildMovementQuery(): MovementQuery {
+    const query: MovementQuery = {};
+
+    if (this.selectedFilter !== 'all') {
+      query.tipoMovimiento = KIND_TO_API[this.selectedFilter];
+    }
+
+    if (this.activeWalletId) {
+      query.idBilletera = this.activeWalletId;
+    }
+
+    return query;
   }
 
   private loadCategoriesForMovement(kind: MovementKind): void {

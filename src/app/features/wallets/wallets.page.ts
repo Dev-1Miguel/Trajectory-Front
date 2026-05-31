@@ -19,6 +19,7 @@ import {
   WalletsApiResult,
   WalletsApiService,
 } from './services/wallets-api.service';
+import { WalletStateService } from './services/wallet-state.service';
 
 interface WalletViewModel {
   idBilletera: number;
@@ -38,6 +39,7 @@ interface WalletViewModel {
 })
 export class WalletsPage implements OnInit, OnDestroy {
   private readonly walletsApiService = inject(WalletsApiService);
+  private readonly walletStateService = inject(WalletStateService);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly router = inject(Router);
@@ -99,6 +101,7 @@ export class WalletsPage implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           this.wallets = this.toWallets(response);
+          this.walletStateService.syncWallets(response);
         },
         error: () => {
           this.wallets = [];
