@@ -16,6 +16,11 @@ import {
   CategoryApiRecord,
   CategoryMovementType,
 } from '../../../categories/models/category.models';
+import { WalletApiRecord } from '../../../wallets/models/wallet.models';
+import {
+  WalletsApiResult,
+  WalletsApiService,
+} from '../../../wallets/services/wallets-api.service';
 import {
   MovementApiRecord,
   MovementPayload,
@@ -31,6 +36,7 @@ import {
   MovementKind,
   MovementOption,
   MovementStep,
+  MovementWalletOption,
   SuccessSummary,
 } from '../../models/movements.models';
 
@@ -43,6 +49,7 @@ interface HydratedMovement {
   kind: MovementKind;
   accountLabel: string;
   categoryName?: string;
+  walletName?: string;
 }
 
 const KIND_TO_API: Record<MovementKind, string> = {
@@ -69,6 +76,7 @@ const ECUADOR_TIME_ZONE = 'America/Guayaquil';
 export class MovementsPageComponent implements OnInit, OnDestroy {
   private readonly movementsApiService = inject(MovementsApiService);
   private readonly categoriesApiService = inject(CategoriesApiService);
+  private readonly walletsApiService = inject(WalletsApiService);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
   readonly filters: MovementFilter[] = [
@@ -103,7 +111,7 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
     { label: 'Inicio', icon: 'home-outline', route: '/home' },
     { label: 'Movimientos', icon: 'swap-horizontal-outline', route: '/movimientos', active: true },
     { label: 'Categor\u00edas', icon: 'pricetags-outline', route: '/categorias' },
-    { label: 'Cuentas', icon: 'wallet-outline' },
+    { label: 'Billeteras', icon: 'wallet-outline', route: '/billeteras' },
     { label: 'Reportes', icon: 'bar-chart-outline' },
     { label: 'Configuracion', icon: 'settings-outline' },
   ];
@@ -115,10 +123,13 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
   isLoadingMovements = false;
   isSavingMovement = false;
   isLoadingCategories = false;
+  isLoadingWallets = false;
   movementError = '';
   saveError = '';
   categoryError = '';
+  walletError = '';
   movementCategories: MovementCategoryOption[] = [];
+  movementWallets: MovementWalletOption[] = [];
 
   private readonly destroy$ = new Subject<void>();
   private lastSavedSummary: SuccessSummary = {
@@ -239,6 +250,44 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
       });
   }
 
+  private loadWalletsForMovement(kind: MovementKind): void {
+    const requestedKind = kind;
+
+    this.isLoadingWallets = true;
+    this.walletError = '';
+    this.movementWallets = [];
+    this.changeDetectorRef.markForCheck();
+
+    this.walletsApiService
+      .consultar(true)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => {
+          if (this.currentStep === requestedKind) {
+            this.isLoadingWallets = false;
+            this.changeDetectorRef.markForCheck();
+          }
+        }),
+      )
+      .subscribe({
+        next: (response) => {
+          if (this.currentStep !== requestedKind) {
+            return;
+          }
+
+          this.movementWallets = this.toMovementWalletOptions(response);
+        },
+        error: () => {
+          if (this.currentStep !== requestedKind) {
+            return;
+          }
+
+          this.movementWallets = [];
+          this.walletError = 'No se pudieron cargar las billeteras.';
+        },
+      });
+  }
+
   setFilter(filter: MovementFilter['id']): void {
     this.selectedFilter = filter;
     this.loadMovements();
@@ -246,6 +295,8 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
 
   openSelector(): void {
     this.saveError = '';
+    this.categoryError = '';
+    this.walletError = '';
     this.currentStep = 'selector';
     this.scrollToTop();
   }
@@ -253,14 +304,17 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
   openForm(kind: MovementKind): void {
     this.saveError = '';
     this.categoryError = '';
+    this.walletError = '';
     this.currentStep = kind;
     this.loadCategoriesForMovement(kind);
+    this.loadWalletsForMovement(kind);
     this.scrollToTop();
   }
 
   showList(): void {
     this.saveError = '';
     this.categoryError = '';
+    this.walletError = '';
     this.currentStep = 'list';
     this.scrollToTop();
   }
@@ -304,6 +358,8 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
       descripcion: draft.descripcion,
       monto: draft.monto,
       idCategoria: draft.kind === 'transfer' ? null : draft.idCategoria ?? null,
+      idBilletera:
+        draft.idBilletera && draft.idBilletera > 0 ? draft.idBilletera : null,
       cuentaOrigen: draft.kind === 'income' ? undefined : draft.cuentaOrigen,
       cuentaDestino: draft.kind === 'income' ? draft.cuentaOrigen : draft.cuentaDestino,
       fechaMovimiento: draft.fechaMovimiento,
@@ -355,9 +411,32 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
       .sort((left, right) => left.nombre.localeCompare(right.nombre, 'es'));
   }
 
+  private toMovementWalletOptions(
+    response: WalletsApiResult,
+  ): MovementWalletOption[] {
+    return this.extractWalletRecords(response)
+      .map((record) => this.toMovementWalletOption(record))
+      .filter((wallet): wallet is MovementWalletOption => wallet !== null)
+      .sort((left, right) => {
+        if (left.esPrincipal !== right.esPrincipal) {
+          return left.esPrincipal ? -1 : 1;
+        }
+
+        return left.nombre.localeCompare(right.nombre, 'es');
+      });
+  }
+
   private extractCategoryRecords(
     response: CategoriesApiResult,
   ): CategoryApiRecord[] {
+    return Array.isArray(response)
+      ? response
+      : Array.isArray(response.data)
+        ? response.data
+        : [];
+  }
+
+  private extractWalletRecords(response: WalletsApiResult): WalletApiRecord[] {
     return Array.isArray(response)
       ? response
       : Array.isArray(response.data)
@@ -396,6 +475,31 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
     };
   }
 
+  private toMovementWalletOption(
+    record: WalletApiRecord,
+  ): MovementWalletOption | null {
+    const isActive = this.toBoolean(this.getValue(record, ['Activo', 'activo']));
+
+    if (isActive === false) {
+      return null;
+    }
+
+    const idBilletera = this.getNumber(record, ['IdBilletera', 'idBilletera', 'id']);
+    const nombre = this.getText(record, ['Nombre', 'nombre']);
+
+    if (idBilletera === undefined || !nombre) {
+      return null;
+    }
+
+    return {
+      idBilletera,
+      nombre,
+      esPrincipal:
+        this.toBoolean(this.getValue(record, ['EsPrincipal', 'esPrincipal'])) ??
+        false,
+    };
+  }
+
   private toHydratedMovement(record: MovementApiRecord | undefined): HydratedMovement | null {
     if (!record) {
       return null;
@@ -406,6 +510,7 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
     const amount = this.getNumber(record, ['monto', 'Monto', 'MONTO']);
     const date = this.getDate(record, ['fechaMovimiento', 'FechaMovimiento', 'FECHAMOVIMIENTO']);
     const categoryName = this.getText(record, ['nombreCategoria', 'NombreCategoria', 'NOMBRECATEGORIA']);
+    const walletName = this.getText(record, ['nombreBilletera', 'NombreBilletera', 'NOMBREBILLETERA']);
 
     if (!this.hasMovementData(record, movementKind, title, amount, date)) {
       return null;
@@ -418,12 +523,13 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
     return {
       id: this.getNumber(record, ['idMovimiento', 'IdMovimiento', 'IDMOVIMIENTO', 'id']),
       title: title ?? 'Movimiento',
-      description: this.getMovementDescription(kind, categoryName, accountLabel),
+      description: this.getMovementDescription(kind, categoryName, walletName, accountLabel),
       amount: amount ?? 0,
       date: movementDate,
       kind,
       accountLabel,
       categoryName,
+      walletName,
     };
   }
 
@@ -431,15 +537,17 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
     const date = draft.fechaMovimiento ? new Date(draft.fechaMovimiento) : new Date();
     const accountLabel = this.getDraftAccountLabel(draft);
     const categoryName = this.getDraftCategoryName(draft);
+    const walletName = this.getDraftWalletName(draft);
 
     return {
       title: draft.titulo,
-      description: this.getMovementDescription(draft.kind, categoryName, accountLabel),
+      description: this.getMovementDescription(draft.kind, categoryName, walletName, accountLabel),
       amount: draft.monto,
       date,
       kind: draft.kind,
       accountLabel,
       categoryName,
+      walletName,
     };
   }
 
@@ -469,7 +577,7 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
       return [
         movement.title,
         this.formatLongDate(movement.date),
-        movement.accountLabel,
+        movement.walletName ?? movement.accountLabel,
       ];
     }
 
@@ -501,8 +609,13 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
   private getMovementDescription(
     kind: MovementKind,
     categoryName: string | undefined,
+    walletName: string | undefined,
     accountLabel: string,
   ): string {
+    if (walletName) {
+      return [KIND_LABEL[kind], categoryName, walletName].filter(Boolean).join(' \u00b7 ');
+    }
+
     if (categoryName) {
       return [KIND_LABEL[kind], categoryName, accountLabel].filter(Boolean).join(' \u00b7 ');
     }
@@ -525,6 +638,16 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
 
     return this.movementCategories.find(
       (category) => category.idCategoria === draft.idCategoria,
+    )?.nombre;
+  }
+
+  private getDraftWalletName(draft: MovementFormValue): string | undefined {
+    if (!draft.idBilletera) {
+      return undefined;
+    }
+
+    return this.movementWallets.find(
+      (wallet) => wallet.idBilletera === draft.idBilletera,
     )?.nombre;
   }
 

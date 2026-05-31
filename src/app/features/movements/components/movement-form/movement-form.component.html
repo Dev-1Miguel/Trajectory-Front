@@ -33,6 +33,25 @@
       </span>
     </label>
 
+    <label class="field">
+      <span>Billetera</span>
+      <select
+        class="text-control select-control"
+        formControlName="idBilletera"
+      >
+        <option [ngValue]="0">
+          {{ loadingWallets ? 'Cargando billeteras...' : 'Sin billetera' }}
+        </option>
+        <option *ngFor="let wallet of wallets" [ngValue]="wallet.idBilletera">
+          {{ wallet.nombre }}{{ wallet.esPrincipal ? ' (principal)' : '' }}
+        </option>
+      </select>
+    </label>
+
+    <p *ngIf="walletErrorMessage" class="form-error form-error--compact">
+      {{ walletErrorMessage }}
+    </p>
+
     <label *ngIf="!isTransfer" class="field">
       <span>Categoria</span>
       <select

@@ -12,73 +12,65 @@ import { finalize, Subject, takeUntil } from 'rxjs';
 
 import { NavigationItem } from '../../shared/models/navigation-item.model';
 import {
-  CategoriesApiResult,
-  CategoriesApiService,
-} from './services/categories-api.service';
+  WalletApiRecord,
+  WalletPayload,
+} from './models/wallet.models';
 import {
-  CategoryApiRecord,
-  CategoryFilter,
-  CategoryFilterId,
-  CategoryMovementType,
-  CategoryPayload,
-} from './models/category.models';
+  WalletsApiResult,
+  WalletsApiService,
+} from './services/wallets-api.service';
 
-interface CategoryViewModel {
-  idCategoria: number;
+interface WalletViewModel {
+  idBilletera: number;
   nombre: string;
-  tipoMovimiento: CategoryMovementType;
+  descripcion: string;
+  esPrincipal: boolean;
   activo: boolean;
   fechaCreacion?: string;
 }
 
 @Component({
-  selector: 'app-categories',
-  templateUrl: './categories.page.html',
-  styleUrls: ['./categories.page.scss'],
+  selector: 'app-wallets',
+  templateUrl: './wallets.page.html',
+  styleUrls: ['./wallets.page.scss'],
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CategoriesPage implements OnInit, OnDestroy {
-  private readonly categoriesApiService = inject(CategoriesApiService);
+export class WalletsPage implements OnInit, OnDestroy {
+  private readonly walletsApiService = inject(WalletsApiService);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly router = inject(Router);
   private readonly destroy$ = new Subject<void>();
 
-  readonly filters: CategoryFilter[] = [
-    { id: 'all', label: 'Todas' },
-    { id: 'Ingreso', label: 'Ingresos' },
-    { id: 'Gasto', label: 'Gastos' },
-  ];
-
   readonly bottomNavigation: NavigationItem[] = [
     { label: 'Inicio', icon: 'home-outline', route: '/home' },
     { label: 'Movimientos', icon: 'swap-horizontal-outline', route: '/movimientos' },
-    { label: 'Categor\u00edas', icon: 'pricetags-outline', route: '/categorias', active: true },
-    { label: 'Billeteras', icon: 'wallet-outline', route: '/billeteras' },
+    { label: 'Categorias', icon: 'pricetags-outline', route: '/categorias' },
+    { label: 'Billeteras', icon: 'wallet-outline', route: '/billeteras', active: true },
     { label: 'Reportes', icon: 'bar-chart-outline' },
     { label: 'Configuracion', icon: 'settings-outline' },
   ];
 
   readonly form = this.formBuilder.group({
-    nombre: ['', Validators.required],
-    tipoMovimiento: ['', Validators.required],
+    nombre: ['', [Validators.required, Validators.maxLength(100)]],
+    descripcion: ['', Validators.maxLength(200)],
+    esPrincipal: [false],
   });
 
-  categories: CategoryViewModel[] = [];
-  filteredCategories: CategoryViewModel[] = [];
-  selectedFilter: CategoryFilterId = 'all';
-  editingCategory?: CategoryViewModel;
-  isLoadingCategories = false;
-  isSavingCategory = false;
-  categoryError = '';
+  wallets: WalletViewModel[] = [];
+  editingWallet?: WalletViewModel;
+  isLoadingWallets = false;
+  isSavingWallet = false;
+  walletError = '';
   formError = '';
   formSuccess = '';
 
   private readonly stateChanges = new Set<number>();
+  private readonly principalChanges = new Set<number>();
 
   ngOnInit(): void {
-    this.loadCategories();
+    this.loadWallets();
   }
 
   ngOnDestroy(): void {
@@ -87,63 +79,58 @@ export class CategoriesPage implements OnInit, OnDestroy {
   }
 
   get formTitle(): string {
-    return this.editingCategory ? 'Editar categoria' : 'Nueva categoria';
+    return this.editingWallet ? 'Editar billetera' : 'Nueva billetera';
   }
 
-  loadCategories(): void {
-    this.isLoadingCategories = true;
-    this.categoryError = '';
+  loadWallets(): void {
+    this.isLoadingWallets = true;
+    this.walletError = '';
     this.changeDetectorRef.markForCheck();
 
-    this.categoriesApiService
+    this.walletsApiService
       .consultar()
       .pipe(
         takeUntil(this.destroy$),
         finalize(() => {
-          this.isLoadingCategories = false;
+          this.isLoadingWallets = false;
           this.changeDetectorRef.markForCheck();
         }),
       )
       .subscribe({
         next: (response) => {
-          this.categories = this.toCategories(response);
-          this.applyFilter();
+          this.wallets = this.toWallets(response);
         },
         error: () => {
-          this.categories = [];
-          this.filteredCategories = [];
-          this.categoryError = 'No se pudieron cargar las categorias.';
+          this.wallets = [];
+          this.walletError = 'No se pudieron cargar las billeteras.';
         },
       });
   }
 
-  setFilter(filter: CategoryFilterId): void {
-    this.selectedFilter = filter;
-    this.applyFilter();
-  }
-
-  editCategory(category: CategoryViewModel): void {
-    this.editingCategory = category;
+  editWallet(wallet: WalletViewModel): void {
+    this.editingWallet = wallet;
     this.formError = '';
     this.formSuccess = '';
     this.form.setValue({
-      nombre: category.nombre,
-      tipoMovimiento: category.tipoMovimiento,
+      nombre: wallet.nombre,
+      descripcion: wallet.descripcion,
+      esPrincipal: wallet.esPrincipal,
     });
   }
 
   cancelEdit(): void {
-    this.editingCategory = undefined;
+    this.editingWallet = undefined;
     this.formError = '';
     this.formSuccess = '';
     this.form.reset({
       nombre: '',
-      tipoMovimiento: '',
+      descripcion: '',
+      esPrincipal: false,
     });
   }
 
-  saveCategory(): void {
-    if (this.form.invalid || this.isSavingCategory) {
+  saveWallet(): void {
+    if (this.form.invalid || this.isSavingWallet) {
       this.form.markAllAsTouched();
       return;
     }
@@ -154,80 +141,116 @@ export class CategoriesPage implements OnInit, OnDestroy {
       return;
     }
 
-    this.isSavingCategory = true;
+    this.isSavingWallet = true;
     this.formError = '';
     this.formSuccess = '';
     this.changeDetectorRef.markForCheck();
 
-    const request = this.editingCategory
-      ? this.categoriesApiService.actualizar(
-          this.editingCategory.idCategoria,
+    const request = this.editingWallet
+      ? this.walletsApiService.actualizar(
+          this.editingWallet.idBilletera,
           payload,
         )
-      : this.categoriesApiService.crear(payload);
+      : this.walletsApiService.crear(payload);
 
     request
       .pipe(
         takeUntil(this.destroy$),
         finalize(() => {
-          this.isSavingCategory = false;
+          this.isSavingWallet = false;
           this.changeDetectorRef.markForCheck();
         }),
       )
       .subscribe({
         next: () => {
-          const successMessage = this.editingCategory
-            ? 'Categoria actualizada correctamente.'
-            : 'Categoria creada correctamente.';
+          const successMessage = this.editingWallet
+            ? 'Billetera actualizada correctamente.'
+            : 'Billetera creada correctamente.';
           this.cancelEdit();
           this.formSuccess = successMessage;
-          this.loadCategories();
+          this.loadWallets();
         },
         error: () => {
-          this.formError = 'No se pudo guardar la categoria.';
+          this.formError = 'No se pudo guardar la billetera.';
         },
       });
   }
 
-  changeCategoryState(category: CategoryViewModel): void {
-    if (this.stateChanges.has(category.idCategoria)) {
+  changeWalletState(wallet: WalletViewModel): void {
+    if (this.stateChanges.has(wallet.idBilletera)) {
       return;
     }
 
-    const nextState = !category.activo;
-    this.stateChanges.add(category.idCategoria);
-    this.categoryError = '';
+    const nextState = !wallet.activo;
+    this.stateChanges.add(wallet.idBilletera);
+    this.walletError = '';
     this.changeDetectorRef.markForCheck();
 
-    this.categoriesApiService
-      .cambiarEstado(category.idCategoria, nextState)
+    this.walletsApiService
+      .cambiarEstado(wallet.idBilletera, nextState)
       .pipe(
         takeUntil(this.destroy$),
         finalize(() => {
-          this.stateChanges.delete(category.idCategoria);
+          this.stateChanges.delete(wallet.idBilletera);
           this.changeDetectorRef.markForCheck();
         }),
       )
       .subscribe({
         next: () => {
-          if (this.editingCategory?.idCategoria === category.idCategoria) {
+          if (this.editingWallet?.idBilletera === wallet.idBilletera) {
             this.cancelEdit();
           }
 
-          this.loadCategories();
+          this.loadWallets();
         },
         error: () => {
-          this.categoryError = 'No se pudo cambiar el estado de la categoria.';
+          this.walletError = 'No se pudo cambiar el estado de la billetera.';
         },
       });
   }
 
-  isChangingState(category: CategoryViewModel): boolean {
-    return this.stateChanges.has(category.idCategoria);
+  markAsPrincipal(wallet: WalletViewModel): void {
+    if (
+      wallet.esPrincipal ||
+      !wallet.activo ||
+      this.principalChanges.has(wallet.idBilletera)
+    ) {
+      return;
+    }
+
+    this.principalChanges.add(wallet.idBilletera);
+    this.walletError = '';
+    this.changeDetectorRef.markForCheck();
+
+    this.walletsApiService
+      .marcarPrincipal(wallet.idBilletera)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => {
+          this.principalChanges.delete(wallet.idBilletera);
+          this.changeDetectorRef.markForCheck();
+        }),
+      )
+      .subscribe({
+        next: () => {
+          this.loadWallets();
+        },
+        error: () => {
+          this.walletError = 'No se pudo marcar la billetera principal.';
+        },
+      });
   }
 
-  trackByCategory(_: number, category: CategoryViewModel): number {
-    return category.idCategoria;
+  isChangingState(wallet: WalletViewModel): boolean {
+    return this.stateChanges.has(wallet.idBilletera);
+  }
+
+  isMarkingPrincipal(wallet: WalletViewModel): boolean {
+    return this.principalChanges.has(wallet.idBilletera);
+  }
+
+  trackByWallet(_: number, wallet: WalletViewModel): number {
+    return wallet.idBilletera;
   }
 
   navigateFromBottomNavigation(item: NavigationItem, event: Event): void {
@@ -251,10 +274,10 @@ export class CategoriesPage implements OnInit, OnDestroy {
     }
   }
 
-  private toPayload(): CategoryPayload | null {
+  private toPayload(): WalletPayload | null {
     const value = this.form.getRawValue();
     const nombre = value.nombre.trim();
-    const tipoMovimiento = value.tipoMovimiento.trim();
+    const descripcion = value.descripcion.trim();
 
     if (!nombre) {
       this.form.controls.nombre.setErrors({ required: true });
@@ -262,45 +285,31 @@ export class CategoriesPage implements OnInit, OnDestroy {
       return null;
     }
 
-    if (!this.isCategoryMovementType(tipoMovimiento)) {
-      this.form.controls.tipoMovimiento.setErrors({ required: true });
-      this.form.markAllAsTouched();
-      return null;
-    }
-
     return {
       nombre,
-      tipoMovimiento,
+      descripcion: descripcion.length > 0 ? descripcion : undefined,
+      esPrincipal: value.esPrincipal,
     };
   }
 
-  private applyFilter(): void {
-    const categories =
-      this.selectedFilter === 'all'
-        ? this.categories
-        : this.categories.filter(
-            (category) => category.tipoMovimiento === this.selectedFilter,
-          );
-
-    this.filteredCategories = [...categories].sort((left, right) => {
-      if (left.activo !== right.activo) {
-        return left.activo ? -1 : 1;
-      }
-
-      return left.nombre.localeCompare(right.nombre, 'es');
-    });
-    this.changeDetectorRef.markForCheck();
-  }
-
-  private toCategories(response: CategoriesApiResult): CategoryViewModel[] {
+  private toWallets(response: WalletsApiResult): WalletViewModel[] {
     return this.extractRecords(response)
-      .map((record) => this.toCategory(record))
-      .filter(
-        (category): category is CategoryViewModel => category !== null,
-      );
+      .map((record) => this.toWallet(record))
+      .filter((wallet): wallet is WalletViewModel => wallet !== null)
+      .sort((left, right) => {
+        if (left.esPrincipal !== right.esPrincipal) {
+          return left.esPrincipal ? -1 : 1;
+        }
+
+        if (left.activo !== right.activo) {
+          return left.activo ? -1 : 1;
+        }
+
+        return left.nombre.localeCompare(right.nombre, 'es');
+      });
   }
 
-  private extractRecords(response: CategoriesApiResult): CategoryApiRecord[] {
+  private extractRecords(response: WalletsApiResult): WalletApiRecord[] {
     return Array.isArray(response)
       ? response
       : Array.isArray(response.data)
@@ -308,21 +317,21 @@ export class CategoriesPage implements OnInit, OnDestroy {
         : [];
   }
 
-  private toCategory(record: CategoryApiRecord): CategoryViewModel | null {
-    const idCategoria = this.getNumber(record, ['IdCategoria', 'idCategoria', 'id']);
+  private toWallet(record: WalletApiRecord): WalletViewModel | null {
+    const idBilletera = this.getNumber(record, ['IdBilletera', 'idBilletera', 'id']);
     const nombre = this.getText(record, ['Nombre', 'nombre']);
-    const tipoMovimiento = this.toCategoryMovementType(
-      this.getText(record, ['TipoMovimiento', 'tipoMovimiento']),
-    );
 
-    if (idCategoria === undefined || !nombre || !tipoMovimiento) {
+    if (idBilletera === undefined || !nombre) {
       return null;
     }
 
     return {
-      idCategoria,
+      idBilletera,
       nombre,
-      tipoMovimiento,
+      descripcion: this.getText(record, ['Descripcion', 'descripcion']) ?? '',
+      esPrincipal:
+        this.toBoolean(this.getValue(record, ['EsPrincipal', 'esPrincipal'])) ??
+        false,
       activo:
         this.toBoolean(this.getValue(record, ['Activo', 'activo'])) ?? true,
       fechaCreacion: this.formatDate(
@@ -332,7 +341,7 @@ export class CategoriesPage implements OnInit, OnDestroy {
   }
 
   private getText(
-    record: CategoryApiRecord,
+    record: WalletApiRecord,
     keys: string[],
   ): string | undefined {
     const value = this.getValue(record, keys);
@@ -347,7 +356,7 @@ export class CategoriesPage implements OnInit, OnDestroy {
   }
 
   private getNumber(
-    record: CategoryApiRecord,
+    record: WalletApiRecord,
     keys: string[],
   ): number | undefined {
     const value = this.getValue(record, keys);
@@ -365,7 +374,7 @@ export class CategoriesPage implements OnInit, OnDestroy {
     return undefined;
   }
 
-  private getValue(record: CategoryApiRecord, keys: string[]): unknown {
+  private getValue(record: WalletApiRecord, keys: string[]): unknown {
     return keys.map((key) => record[key]).find((value) => value !== undefined);
   }
 
@@ -381,7 +390,7 @@ export class CategoriesPage implements OnInit, OnDestroy {
     if (typeof value === 'string') {
       const normalizedValue = value.trim().toLowerCase();
 
-      if (['true', '1', 'activo'].includes(normalizedValue)) {
+      if (['true', '1', 'activo', 'principal'].includes(normalizedValue)) {
         return true;
       }
 
@@ -391,32 +400,6 @@ export class CategoriesPage implements OnInit, OnDestroy {
     }
 
     return undefined;
-  }
-
-  private toCategoryMovementType(
-    value: string | undefined,
-  ): CategoryMovementType | undefined {
-    const normalizedValue = (value ?? '')
-      .trim()
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '');
-
-    if (normalizedValue.includes('ingreso')) {
-      return 'Ingreso';
-    }
-
-    if (normalizedValue.includes('gasto')) {
-      return 'Gasto';
-    }
-
-    return undefined;
-  }
-
-  private isCategoryMovementType(
-    value: string,
-  ): value is CategoryMovementType {
-    return value === 'Ingreso' || value === 'Gasto';
   }
 
   private formatDate(value: string | undefined): string | undefined {

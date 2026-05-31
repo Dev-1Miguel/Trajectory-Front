@@ -49,6 +49,15 @@ const routes: Routes = [
       ),
   },
   {
+    path: 'billeteras',
+    canMatch: [authMatchGuard],
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./features/wallets/wallets.module').then(
+        (m) => m.WalletsModule,
+      ),
+  },
+  {
     path: 'perfil',
     canMatch: [authMatchGuard],
     canActivate: [authGuard],
@@ -59,7 +68,7 @@ const routes: Routes = [
   },
   {
     path: 'cuentas',
-    redirectTo: 'home',
+    redirectTo: 'billeteras',
     pathMatch: 'full',
   },
   {

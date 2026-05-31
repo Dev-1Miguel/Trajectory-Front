@@ -14,6 +14,7 @@ import {
   MovementCategoryOption,
   MovementFormValue,
   MovementKind,
+  MovementWalletOption,
 } from '../../models/movements.models';
 
 const ECUADOR_TIME_ZONE = 'America/Guayaquil';
@@ -31,8 +32,11 @@ export class MovementFormComponent implements OnChanges {
   @Input({ required: true }) title = '';
   @Input({ required: true }) kind: MovementKind = 'income';
   @Input() categories: MovementCategoryOption[] = [];
+  @Input() wallets: MovementWalletOption[] = [];
   @Input() loadingCategories = false;
+  @Input() loadingWallets = false;
   @Input() categoryErrorMessage = '';
+  @Input() walletErrorMessage = '';
   @Input() saving = false;
   @Input() errorMessage = '';
 
@@ -43,6 +47,7 @@ export class MovementFormComponent implements OnChanges {
     titulo: ['', [Validators.required, Validators.maxLength(150)]],
     monto: [0, [Validators.required, Validators.min(0.01)]],
     idCategoria: [0],
+    idBilletera: [0],
     cuentaOrigen: [''],
     cuentaDestino: [''],
     fecha: [this.getTodayValue(), Validators.required],
@@ -57,6 +62,13 @@ export class MovementFormComponent implements OnChanges {
       changes['loadingCategories']
     ) {
       this.syncCategoryControlState();
+    }
+
+    if (
+      changes['wallets'] ||
+      changes['loadingWallets']
+    ) {
+      this.syncWalletControlState();
     }
   }
 
@@ -98,6 +110,7 @@ export class MovementFormComponent implements OnChanges {
       descripcion: this.toOptionalString(value.descripcion),
       monto: value.monto,
       idCategoria: this.kind === 'transfer' ? null : this.toCategoryId(value.idCategoria),
+      idBilletera: this.toWalletId(value.idBilletera),
       cuentaOrigen: this.toOptionalString(value.cuentaOrigen),
       cuentaDestino: this.toOptionalString(value.cuentaDestino),
       fechaMovimiento: this.toEcuadorDateTime(value.fecha, value.hora),
@@ -105,6 +118,10 @@ export class MovementFormComponent implements OnChanges {
   }
 
   private toCategoryId(value: number): number | null {
+    return value > 0 ? value : null;
+  }
+
+  private toWalletId(value: number): number | null {
     return value > 0 ? value : null;
   }
 
@@ -118,11 +135,37 @@ export class MovementFormComponent implements OnChanges {
     }
 
     if (this.loadingCategories || this.categories.length === 0) {
+      control.setValue(0, { emitEvent: false });
       control.disable({ emitEvent: false });
       return;
     }
 
     control.enable({ emitEvent: false });
+  }
+
+  private syncWalletControlState(): void {
+    const control = this.form.controls.idBilletera;
+
+    if (this.loadingWallets || this.wallets.length === 0) {
+      control.setValue(0, { emitEvent: false });
+      control.disable({ emitEvent: false });
+      return;
+    }
+
+    control.enable({ emitEvent: false });
+
+    const currentValue = control.value;
+    const hasCurrentWallet = this.wallets.some(
+      (wallet) => wallet.idBilletera === currentValue,
+    );
+
+    if (hasCurrentWallet) {
+      return;
+    }
+
+    const principalWallet = this.wallets.find((wallet) => wallet.esPrincipal);
+
+    control.setValue(principalWallet?.idBilletera ?? 0, { emitEvent: false });
   }
 
   private toOptionalString(value: string): string | undefined {
