@@ -6,6 +6,7 @@ import {
   MovementKind,
   MovementOption,
   MovementStep,
+  MovementWalletOption,
   SuccessSummary,
 } from '../../models/movements.models';
 
@@ -23,8 +24,11 @@ export class MovementWorkbenchComponent {
   @Input({ required: true }) movementOptions: MovementOption[] = [];
   @Input({ required: true }) successSummary!: SuccessSummary;
   @Input() categories: MovementCategoryOption[] = [];
+  @Input() wallets: MovementWalletOption[] = [];
   @Input() loadingCategories = false;
+  @Input() loadingWallets = false;
   @Input() categoryErrorMessage = '';
+  @Input() walletErrorMessage = '';
   @Input() saving = false;
   @Input() errorMessage = '';
 

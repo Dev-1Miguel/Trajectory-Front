@@ -40,6 +40,7 @@ export interface Movement {
 export interface DashboardResumenQuery {
   fechaInicio?: string;
   fechaFin?: string;
+  idBilletera?: number;
 }
 
 export interface DashboardMovimientoApiRecord {

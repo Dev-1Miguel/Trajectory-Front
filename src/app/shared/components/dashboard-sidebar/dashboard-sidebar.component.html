@@ -39,6 +39,50 @@
         </button>
 
         <div
+          class="profile-dropdown__item profile-dropdown__item--wallet ion-activatable"
+          role="menuitem"
+          (click)="onWalletSelectorClick($event)"
+        >
+          <span class="profile-dropdown__icon">
+            <ion-icon name="briefcase-outline" aria-hidden="true"></ion-icon>
+          </span>
+          <label
+            *ngIf="{
+              wallets: wallets$ | async,
+              activeWalletId: activeWalletId$ | async,
+              loading: loadingWallets$ | async
+            } as walletState"
+            class="wallet-selector"
+          >
+            <span class="wallet-selector__label">Billetera activa</span>
+            <select
+              class="wallet-selector__select"
+              aria-label="Seleccionar billetera activa"
+              [value]="walletState.activeWalletId || ''"
+              [disabled]="walletState.loading || (walletState.wallets || []).length === 0"
+              (click)="onWalletSelectorClick($event)"
+              (change)="selectActiveWallet($event)"
+            >
+              <option value="" disabled>
+                {{ walletState.loading ? 'Cargando...' : 'Sin billetera activa' }}
+              </option>
+              <option
+                *ngFor="let wallet of walletState.wallets || []; trackBy: trackByWallet"
+                [value]="wallet.idBilletera"
+              >
+                {{ wallet.nombre }}{{ wallet.esPrincipal ? ' (principal)' : '' }}
+              </option>
+            </select>
+          </label>
+          <ion-icon
+            class="wallet-selector__chevron"
+            name="chevron-down-outline"
+            aria-hidden="true"
+          ></ion-icon>
+          <ion-ripple-effect></ion-ripple-effect>
+        </div>
+
+        <div
           class="profile-dropdown__item profile-dropdown__item--toggle ion-activatable"
           role="menuitemcheckbox"
           [attr.aria-checked]="darkModeEnabled"

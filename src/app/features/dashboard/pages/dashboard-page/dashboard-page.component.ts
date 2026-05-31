@@ -10,6 +10,11 @@ import { Router } from '@angular/router';
 import { finalize, Subject, takeUntil } from 'rxjs';
 
 import { AuthService } from '../../../../core/auth/auth.service';
+import { WalletStateService } from '../../../wallets/services/wallet-state.service';
+import {
+  MovementChangePayload,
+  MovementStateService,
+} from '../../../movements/services/movement-state.service';
 import { NavigationItem } from '../../../../shared/models/navigation-item.model';
 import {
   CategoryExpense,
@@ -51,6 +56,8 @@ const ECUADOR_TIME_ZONE = 'America/Guayaquil';
 })
 export class DashboardPageComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
+  private readonly walletStateService = inject(WalletStateService);
+  private readonly movementStateService = inject(MovementStateService);
   private readonly dashboardApiService = inject(DashboardApiService);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private readonly router = inject(Router);
@@ -66,7 +73,7 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
   readonly bottomNavigation: NavigationItem[] = [
     { label: 'Inicio', icon: 'home-outline', route: '/home', active: true },
     { label: 'Movimientos', icon: 'swap-horizontal-outline', route: '/movimientos' },
-    { label: 'Cuentas', icon: 'card-outline' },
+    { label: 'Billeteras', icon: 'wallet-outline', route: '/billeteras' },
     { label: 'Reportes', icon: 'bar-chart-outline' },
     { label: 'Configuracion', icon: 'settings-outline' },
   ];
@@ -80,11 +87,29 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
   summaryError = '';
   greetingName = '';
 
+  private activeWalletId: number | null = null;
+  private currentSummaryQuery: DashboardResumenQuery = {};
+  private summaryRequestId = 0;
+
   ngOnInit(): void {
     this.greetingName = this.obtenerNombreUsuario();
     this.cargarUsuarioActual();
     this.applySummary(EMPTY_DASHBOARD_SUMMARY);
-    this.loadSummary();
+
+    this.walletStateService.activeWalletId$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((idBilletera) => {
+        this.activeWalletId = idBilletera;
+        this.loadSummary(this.currentSummaryQuery);
+      });
+
+    this.movementStateService.movementChanged$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((change) => {
+        if (this.shouldRefreshForMovement(change)) {
+          this.loadSummary(this.currentSummaryQuery);
+        }
+      });
   }
 
   ngOnDestroy(): void {
@@ -92,25 +117,41 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  loadSummary(query: DashboardResumenQuery = {}): void {
+  loadSummary(query: DashboardResumenQuery = this.currentSummaryQuery): void {
+    const requestId = ++this.summaryRequestId;
+    const summaryQuery = this.withActiveWallet(query);
+
+    this.currentSummaryQuery = summaryQuery;
     this.isLoadingSummary = true;
     this.summaryError = '';
     this.changeDetectorRef.markForCheck();
 
     this.dashboardApiService
-      .obtenerResumen(query)
+      .obtenerResumen(summaryQuery)
       .pipe(
         takeUntil(this.destroy$),
         finalize(() => {
+          if (requestId !== this.summaryRequestId) {
+            return;
+          }
+
           this.isLoadingSummary = false;
           this.changeDetectorRef.markForCheck();
         }),
       )
       .subscribe({
         next: (resumen) => {
+          if (requestId !== this.summaryRequestId) {
+            return;
+          }
+
           this.applySummary(resumen);
         },
         error: () => {
+          if (requestId !== this.summaryRequestId) {
+            return;
+          }
+
           this.applySummary(EMPTY_DASHBOARD_SUMMARY);
           this.summaryError = 'No se pudo cargar el resumen financiero.';
         },
@@ -139,6 +180,18 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
     this.movements = resumen.ultimosMovimientos.map((movement) =>
       this.toMovement(movement),
     );
+  }
+
+  private withActiveWallet(query: DashboardResumenQuery): DashboardResumenQuery {
+    const { idBilletera: _previousWalletId, ...baseQuery } = query;
+
+    return this.activeWalletId
+      ? { ...baseQuery, idBilletera: this.activeWalletId }
+      : baseQuery;
+  }
+
+  private shouldRefreshForMovement(change: MovementChangePayload): boolean {
+    return !this.activeWalletId || change.idBilletera === this.activeWalletId;
   }
 
   private cargarUsuarioActual(): void {

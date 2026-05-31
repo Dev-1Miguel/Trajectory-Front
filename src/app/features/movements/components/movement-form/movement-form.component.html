@@ -4,7 +4,7 @@
       <ion-icon name="arrow-back-outline" aria-hidden="true"></ion-icon>
     </button>
     <h2>{{ title }}</h2>
-    <button class="icon-button icon-button--save" type="submit" aria-label="Guardar movimiento" [disabled]="saving">
+    <button class="icon-button icon-button--save" type="submit" aria-label="Guardar movimiento" [disabled]="saving || loadingWallets">
       <ion-icon name="save-outline" aria-hidden="true"></ion-icon>
     </button>
   </header>
@@ -32,6 +32,25 @@
         <input type="number" inputmode="decimal" step="0.01" min="0.01" formControlName="monto" aria-label="Monto" />
       </span>
     </label>
+
+    <label class="field">
+      <span>Billetera</span>
+      <select
+        class="text-control select-control"
+        formControlName="idBilletera"
+      >
+        <option [ngValue]="0">
+          {{ loadingWallets ? 'Cargando billeteras...' : 'Sin billetera' }}
+        </option>
+        <option *ngFor="let wallet of wallets" [ngValue]="wallet.idBilletera">
+          {{ wallet.nombre }}{{ wallet.esPrincipal ? ' (principal)' : '' }}
+        </option>
+      </select>
+    </label>
+
+    <p *ngIf="walletErrorMessage" class="form-error form-error--compact">
+      {{ walletErrorMessage }}
+    </p>
 
     <label *ngIf="!isTransfer" class="field">
       <span>Categoria</span>
@@ -87,7 +106,7 @@
     [class.save-button--expense]="kind === 'expense'"
     [class.save-button--transfer]="kind === 'transfer'"
     type="submit"
-    [disabled]="form.invalid || saving"
+    [disabled]="form.invalid || saving || loadingWallets"
   >
     {{ saving ? 'Guardando...' : buttonText }}
   </button>

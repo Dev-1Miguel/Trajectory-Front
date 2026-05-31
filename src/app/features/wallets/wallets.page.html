@@ -1,0 +1,168 @@
+<ion-content [fullscreen]="true">
+  <main class="wallets-page">
+    <section class="wallets-heading" aria-labelledby="wallets-title">
+      <div>
+        <h1 id="wallets-title">BILLETERAS</h1>
+        <p>Administra tus espacios financieros</p>
+      </div>
+    </section>
+
+    <section class="wallets-layout" aria-label="Panel de billeteras">
+      <article class="wallets-board">
+        <header class="card-header">
+          <div>
+            <strong>Billeteras</strong>
+            <span>Listado general</span>
+          </div>
+          <button class="icon-button" type="button" aria-label="Recargar billeteras" (click)="loadWallets()">
+            <ion-icon name="refresh-outline" aria-hidden="true"></ion-icon>
+          </button>
+        </header>
+
+        <div *ngIf="isLoadingWallets" class="wallet-state">
+          <ion-icon name="sync-outline" aria-hidden="true"></ion-icon>
+          <strong>Cargando billeteras...</strong>
+        </div>
+
+        <div *ngIf="!isLoadingWallets && walletError" class="wallet-state wallet-state--error">
+          <ion-icon name="warning-outline" aria-hidden="true"></ion-icon>
+          <strong>{{ walletError }}</strong>
+          <button type="button" (click)="loadWallets()">Reintentar</button>
+        </div>
+
+        <div *ngIf="!isLoadingWallets && !walletError && wallets.length === 0" class="wallet-state">
+          <ion-icon name="wallet-outline" aria-hidden="true"></ion-icon>
+          <strong>No hay billeteras para mostrar.</strong>
+        </div>
+
+        <ul *ngIf="!isLoadingWallets && !walletError && wallets.length > 0" class="wallet-list">
+          <li *ngFor="let wallet of wallets; trackBy: trackByWallet" class="wallet-row">
+            <span
+              class="wallet-row__icon"
+              [class.wallet-row__icon--principal]="wallet.esPrincipal"
+              [class.wallet-row__icon--inactive]="!wallet.activo"
+            >
+              <ion-icon name="wallet-outline" aria-hidden="true"></ion-icon>
+            </span>
+
+            <span class="wallet-row__copy">
+              <strong>{{ wallet.nombre }}</strong>
+              <small>
+                {{ wallet.descripcion || 'Sin descripcion' }}
+                <ng-container *ngIf="wallet.fechaCreacion"> &middot; {{ wallet.fechaCreacion }}</ng-container>
+              </small>
+            </span>
+
+            <span class="wallet-badges">
+              <span *ngIf="wallet.esPrincipal" class="wallet-status wallet-status--principal">
+                Principal
+              </span>
+              <span
+                class="wallet-status"
+                [class.wallet-status--inactive]="!wallet.activo"
+              >
+                {{ wallet.activo ? 'Activa' : 'Inactiva' }}
+              </span>
+            </span>
+
+            <span class="wallet-actions">
+              <button class="icon-button" type="button" aria-label="Editar billetera" (click)="editWallet(wallet)">
+                <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
+              </button>
+              <button
+                class="state-button state-button--secondary"
+                type="button"
+                [disabled]="wallet.esPrincipal || !wallet.activo || isMarkingPrincipal(wallet)"
+                (click)="markAsPrincipal(wallet)"
+              >
+                {{ wallet.esPrincipal ? 'Principal' : 'Marcar principal' }}
+              </button>
+              <button
+                class="state-button"
+                type="button"
+                [disabled]="isChangingState(wallet)"
+                (click)="changeWalletState(wallet)"
+              >
+                {{ wallet.activo ? 'Desactivar' : 'Activar' }}
+              </button>
+            </span>
+          </li>
+        </ul>
+      </article>
+
+      <aside class="wallet-form-card" aria-labelledby="wallet-form-title">
+        <header class="form-header">
+          <div>
+            <h2 id="wallet-form-title">{{ formTitle }}</h2>
+            <p>{{ editingWallet ? 'Actualiza los datos de la billetera.' : 'Crea un espacio financiero.' }}</p>
+          </div>
+          <button
+            *ngIf="editingWallet"
+            class="icon-button"
+            type="button"
+            aria-label="Cancelar edicion"
+            (click)="cancelEdit()"
+          >
+            <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+          </button>
+        </header>
+
+        <form [formGroup]="form" (ngSubmit)="saveWallet()">
+          <label class="field">
+            <span>Nombre</span>
+            <input class="text-control" type="text" formControlName="nombre" maxlength="100" placeholder="Ej. Personal" />
+            <small *ngIf="form.controls.nombre.touched && form.controls.nombre.hasError('required')">
+              El nombre es requerido.
+            </small>
+            <small *ngIf="form.controls.nombre.touched && form.controls.nombre.hasError('maxlength')">
+              El nombre no puede superar 100 caracteres.
+            </small>
+          </label>
+
+          <label class="field">
+            <span>Descripcion</span>
+            <textarea
+              class="text-control textarea-control"
+              formControlName="descripcion"
+              maxlength="200"
+              rows="3"
+              placeholder="Ej. Gastos personales del mes"
+            ></textarea>
+            <small *ngIf="form.controls.descripcion.touched && form.controls.descripcion.hasError('maxlength')">
+              La descripcion no puede superar 200 caracteres.
+            </small>
+          </label>
+
+          <label class="check-field">
+            <input type="checkbox" formControlName="esPrincipal" />
+            <span>
+              <strong>Marcar como principal</strong>
+              <small>Se usara por defecto en nuevos movimientos.</small>
+            </span>
+          </label>
+
+          <p *ngIf="formError" class="form-message form-message--error">{{ formError }}</p>
+          <p *ngIf="formSuccess" class="form-message form-message--success">{{ formSuccess }}</p>
+
+          <button class="save-button" type="submit" [disabled]="form.invalid || isSavingWallet">
+            {{ isSavingWallet ? 'Guardando...' : editingWallet ? 'Actualizar billetera' : 'Crear billetera' }}
+          </button>
+        </form>
+      </aside>
+    </section>
+
+    <nav class="bottom-navigation" aria-label="Navegacion inferior">
+      <button
+        *ngFor="let item of bottomNavigation"
+        class="bottom-navigation__item"
+        [class.bottom-navigation__item--active]="item.active"
+        type="button"
+        (pointerdown)="releaseNavigationFocus($event)"
+        (click)="navigateFromBottomNavigation(item, $event)"
+      >
+        <ion-icon [name]="item.icon" aria-hidden="true"></ion-icon>
+        <span>{{ item.label }}</span>
+      </button>
+    </nav>
+  </main>
+</ion-content>

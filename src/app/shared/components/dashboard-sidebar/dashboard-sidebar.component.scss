@@ -225,6 +225,64 @@
   font-size: 18px;
 }
 
+.profile-dropdown__item--wallet {
+  cursor: default;
+}
+
+.profile-dropdown__item--wallet .profile-dropdown__icon {
+  align-self: start;
+  margin-top: 1px;
+}
+
+.wallet-selector {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.wallet-selector__label {
+  overflow: hidden;
+  color: var(--sidebar-muted);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wallet-selector__select {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  color: var(--sidebar-text);
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 850;
+  line-height: 1.2;
+  appearance: none;
+  cursor: pointer;
+}
+
+.wallet-selector__select:disabled {
+  color: var(--sidebar-muted);
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+.wallet-selector__chevron {
+  align-self: center;
+  color: var(--sidebar-muted);
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.wallet-selector__select:focus-visible {
+  outline: 3px solid rgba(85, 65, 241, 0.35);
+  outline-offset: 3px;
+}
+
 .profile-dropdown__item--toggle {
   cursor: pointer;
 }
