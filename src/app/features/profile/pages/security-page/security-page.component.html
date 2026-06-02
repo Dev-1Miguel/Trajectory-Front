@@ -96,5 +96,114 @@
         </form>
       </div>
     </section>
+
+    <section class="security-card sessions-card" aria-label="Sesiones activas">
+      <div class="security-card__icon security-card__icon--sessions" aria-hidden="true">
+        <ion-icon name="desktop-outline"></ion-icon>
+      </div>
+
+      <div class="security-card__content">
+        <div class="security-card__intro">
+          <span>Accesos recientes</span>
+          <strong>Sesiones activas</strong>
+          <p>Revisa los dispositivos con sesion abierta y cierra los accesos que ya no uses.</p>
+        </div>
+
+        <p
+          *ngIf="sessions.length > 0 && !hasCurrentSessionMarker()"
+          class="security-feedback security-feedback--warning"
+          aria-live="polite"
+        >
+          <ion-icon name="alert-circle-outline" aria-hidden="true"></ion-icon>
+          <span>Esta acción puede cerrar también la sesión actual.</span>
+        </p>
+
+        <p *ngIf="sessionsErrorMessage" class="security-feedback security-feedback--error" aria-live="polite">
+          <ion-icon name="warning-outline" aria-hidden="true"></ion-icon>
+          <span>{{ sessionsErrorMessage }}</span>
+        </p>
+
+        <p *ngIf="sessionsFeedbackMessage" class="security-feedback security-feedback--success" aria-live="polite">
+          <ion-icon name="checkmark-circle-outline" aria-hidden="true"></ion-icon>
+          <span>{{ sessionsFeedbackMessage }}</span>
+        </p>
+
+        <div *ngIf="sessionsLoading" class="sessions-empty">
+          Cargando sesiones...
+        </div>
+
+        <div *ngIf="!sessionsLoading && sessions.length === 0" class="sessions-empty">
+          No hay sesiones activas para mostrar.
+        </div>
+
+        <div *ngIf="!sessionsLoading && sessions.length > 0" class="sessions-list">
+          <article
+            *ngFor="let session of sessions; trackBy: trackBySession"
+            class="session-item"
+            [class.session-item--inactive]="!session.activa"
+            [class.session-item--current]="session.esActual"
+          >
+            <label class="session-item__selector">
+              <input
+                type="checkbox"
+                [checked]="isSessionSelected(session)"
+                [disabled]="session.esActual || sessionsActionLoading"
+                (change)="toggleSessionSelection(session)"
+              />
+              <span class="session-item__check" aria-hidden="true"></span>
+            </label>
+
+            <div class="session-item__body">
+              <div class="session-item__header">
+                <strong>{{ session.dispositivo }}</strong>
+                <span class="session-item__status">{{ session.estado }}</span>
+                <span *ngIf="session.esActual" class="session-item__current">Sesion actual</span>
+              </div>
+
+              <dl class="session-item__meta">
+                <div>
+                  <dt>IP</dt>
+                  <dd>{{ session.ip }}</dd>
+                </div>
+                <div>
+                  <dt>Inicio</dt>
+                  <dd>{{ session.fechaInicio }}</dd>
+                </div>
+                <div>
+                  <dt>Expiracion</dt>
+                  <dd>{{ session.fechaExpiracion }}</dd>
+                </div>
+              </dl>
+            </div>
+          </article>
+        </div>
+
+        <div class="sessions-actions">
+          <span class="sessions-actions__count">
+            {{ getSelectedSessionsCount() }} seleccionada(s)
+          </span>
+
+          <div class="sessions-actions__buttons">
+            <ion-button
+              fill="outline"
+              type="button"
+              [disabled]="sessionsActionLoading || getSelectedSessionsCount() === 0"
+              (click)="closeSelectedSessions()"
+            >
+              Cerrar seleccionadas
+            </ion-button>
+
+            <ion-button
+              color="danger"
+              type="button"
+              [disabled]="sessionsActionLoading || sessions.length === 0"
+              (click)="closeAllSessions()"
+            >
+              Cerrar todas las sesiones
+            </ion-button>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 </ion-content>

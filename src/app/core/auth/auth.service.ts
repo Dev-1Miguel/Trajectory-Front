@@ -8,6 +8,9 @@ import {
   AuthUser,
   CambiarPasswordPayload,
   CambiarPasswordResponse,
+  CerrarSesionesPayload,
+  CerrarSesionesResponse,
+  ConsultarSesionesResponse,
   LoginRequest,
   RegisterPayload,
 } from './auth.models';
@@ -55,6 +58,26 @@ export class AuthService {
     return this.http.patch<CambiarPasswordResponse>(
       `${this.authUrl}/password`,
       payload,
+    );
+  }
+
+  consultarSesiones(): Observable<ConsultarSesionesResponse> {
+    return this.http.get<ConsultarSesionesResponse>(`${this.authUrl}/sesiones`);
+  }
+
+  cerrarSesiones(idSesiones: string[]): Observable<CerrarSesionesResponse> {
+    const payload: CerrarSesionesPayload = { idSesiones };
+
+    return this.http.patch<CerrarSesionesResponse>(
+      `${this.authUrl}/sesiones/cerrar`,
+      payload,
+    );
+  }
+
+  cerrarTodasSesiones(): Observable<CerrarSesionesResponse> {
+    return this.http.patch<CerrarSesionesResponse>(
+      `${this.authUrl}/sesiones/cerrar-todas`,
+      {},
     );
   }
 

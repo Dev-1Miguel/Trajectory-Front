@@ -20,6 +20,24 @@ export interface CambiarPasswordResponse {
   mensaje: string;
 }
 
+export interface SesionActiva {
+  [key: string]: unknown;
+}
+
+export interface ConsultarSesionesResponse {
+  sesiones?: SesionActiva[];
+  data?: SesionActiva[];
+}
+
+export interface CerrarSesionesPayload {
+  idSesiones: string[];
+}
+
+export interface CerrarSesionesResponse {
+  mensaje?: string;
+  message?: string;
+}
+
 export interface AuthUser {
   id?: number | string;
   nombreCompleto?: string;
