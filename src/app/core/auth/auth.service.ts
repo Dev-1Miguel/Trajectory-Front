@@ -6,6 +6,8 @@ import { environment } from '../../../environments/environment';
 import {
   AuthResponse,
   AuthUser,
+  CambiarPasswordPayload,
+  CambiarPasswordResponse,
   LoginRequest,
   RegisterPayload,
 } from './auth.models';
@@ -18,11 +20,13 @@ export class AuthService {
   private readonly refreshTokenKey = 'trajectory_refresh_token';
   private readonly userKey = 'trajectory_auth_user';
   private readonly expiresAtKey = 'trajectory_auth_expires_at';
+  private readonly activeWalletKey = 'trajectory_active_wallet_id';
   private readonly authStorageKeys = [
     this.tokenKey,
     this.refreshTokenKey,
     this.userKey,
     this.expiresAtKey,
+    this.activeWalletKey,
   ];
   private sesionValidada = false;
 
@@ -42,6 +46,15 @@ export class AuthService {
     return this.http.get<AuthResponse | AuthUser>(`${this.authUrl}/me`).pipe(
       map((response) => this.normalizarUsuario(response)),
       tap((usuario) => this.guardarUsuario(usuario)),
+    );
+  }
+
+  cambiarPassword(
+    payload: CambiarPasswordPayload,
+  ): Observable<CambiarPasswordResponse> {
+    return this.http.patch<CambiarPasswordResponse>(
+      `${this.authUrl}/password`,
+      payload,
     );
   }
 

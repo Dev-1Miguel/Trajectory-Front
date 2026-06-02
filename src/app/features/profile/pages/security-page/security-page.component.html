@@ -1,0 +1,100 @@
+<ion-content [fullscreen]="true">
+  <main class="security-page">
+    <section class="security-heading" aria-labelledby="security-title">
+      <div>
+        <h1 id="security-title">Seguridad</h1>
+        <p>Actualiza tu contrasena para proteger el acceso a tu cuenta.</p>
+      </div>
+    </section>
+
+    <section class="security-card" aria-label="Cambiar contrasena">
+      <div class="security-card__icon" aria-hidden="true">
+        <ion-icon name="shield-checkmark-outline"></ion-icon>
+      </div>
+
+      <div class="security-card__content">
+        <div class="security-card__intro">
+          <span>Cuenta segura</span>
+          <strong>Cambiar contrasena</strong>
+          <p>Despues del cambio cerraremos tu sesion para que ingreses con la nueva contrasena.</p>
+        </div>
+
+        <form class="security-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+          <div class="form-grid">
+            <label class="field field--wide">
+              <span>Contrasena actual</span>
+              <input
+                class="field__control"
+                [class.field__control--invalid]="hasFieldError('passwordActual')"
+                formControlName="passwordActual"
+                type="password"
+                autocomplete="current-password"
+                placeholder="Ingresa tu contrasena actual"
+              />
+              <small *ngIf="hasFieldError('passwordActual')" class="field__error">
+                Ingresa tu contrasena actual.
+              </small>
+            </label>
+
+            <label class="field">
+              <span>Nueva contrasena</span>
+              <input
+                class="field__control"
+                [class.field__control--invalid]="hasFieldError('passwordNueva') || hasSamePassword()"
+                formControlName="passwordNueva"
+                type="password"
+                autocomplete="new-password"
+                placeholder="Minimo 8 caracteres"
+              />
+              <small
+                *ngIf="hasFieldError('passwordNueva') || hasSamePassword()"
+                class="field__error"
+              >
+                {{ getPasswordNuevaError() }}
+              </small>
+            </label>
+
+            <label class="field">
+              <span>Confirmar nueva contrasena</span>
+              <input
+                class="field__control"
+                [class.field__control--invalid]="hasFieldError('confirmarPasswordNueva') || hasPasswordMismatch()"
+                formControlName="confirmarPasswordNueva"
+                type="password"
+                autocomplete="new-password"
+                placeholder="Repite la nueva contrasena"
+              />
+              <small
+                *ngIf="hasFieldError('confirmarPasswordNueva') || hasPasswordMismatch()"
+                class="field__error"
+              >
+                {{ getConfirmarPasswordNuevaError() }}
+              </small>
+            </label>
+          </div>
+
+          <p *ngIf="errorMessage" class="security-feedback security-feedback--error" aria-live="polite">
+            <ion-icon name="warning-outline" aria-hidden="true"></ion-icon>
+            <span>{{ errorMessage }}</span>
+          </p>
+
+          <p *ngIf="feedbackMessage" class="security-feedback security-feedback--success" aria-live="polite">
+            <ion-icon name="checkmark-circle-outline" aria-hidden="true"></ion-icon>
+            <span>{{ feedbackMessage }}</span>
+          </p>
+
+          <div class="form-actions">
+            <ion-button
+              class="save-button"
+              type="submit"
+              [disabled]="form.invalid || loading"
+            >
+              <ion-icon name="key-outline" slot="start" aria-hidden="true"></ion-icon>
+              {{ loading ? 'Actualizando...' : 'Actualizar contrasena' }}
+            </ion-button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+</ion-content>

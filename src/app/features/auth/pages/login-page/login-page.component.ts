@@ -42,6 +42,12 @@ export class LoginPageComponent implements OnInit {
   ngOnInit(): void {
     if (this.route.snapshot.queryParamMap.get('registrado') === '1') {
       this.feedbackMessage = 'Cuenta creada correctamente. Inicia sesion.';
+      return;
+    }
+
+    if (this.route.snapshot.queryParamMap.get('passwordActualizada') === '1') {
+      this.feedbackMessage =
+        'Contrasena actualizada correctamente. Inicia sesion nuevamente.';
     }
   }
 

@@ -41,7 +41,11 @@ export class ApiErrorService {
     }
 
     const mensaje =
-      payload['message'] ?? payload['messages'] ?? payload['errors'] ?? payload['error'];
+      payload['mensaje'] ??
+      payload['message'] ??
+      payload['messages'] ??
+      payload['errors'] ??
+      payload['error'];
 
     return this.normalizarMensaje(mensaje);
   }

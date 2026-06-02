@@ -10,6 +10,16 @@ export interface RegisterPayload {
   confirmarPassword: string;
 }
 
+export interface CambiarPasswordPayload {
+  passwordActual: string;
+  passwordNueva: string;
+  confirmarPasswordNueva: string;
+}
+
+export interface CambiarPasswordResponse {
+  mensaje: string;
+}
+
 export interface AuthUser {
   id?: number | string;
   nombreCompleto?: string;

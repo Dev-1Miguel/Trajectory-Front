@@ -6,6 +6,7 @@ import { IonicModule } from '@ionic/angular';
 import { PersonalInfoFormComponent } from './components/personal-info-form/personal-info-form.component';
 import { ProfileAvatarComponent } from './components/profile-avatar/profile-avatar.component';
 import { PersonalInfoPageComponent } from './pages/personal-info-page/personal-info-page.component';
+import { SecurityPageComponent } from './pages/security-page/security-page.component';
 import { ProfileRoutingModule } from './profile-routing.module';
 
 @NgModule({
@@ -13,6 +14,7 @@ import { ProfileRoutingModule } from './profile-routing.module';
     PersonalInfoFormComponent,
     PersonalInfoPageComponent,
     ProfileAvatarComponent,
+    SecurityPageComponent,
   ],
   imports: [CommonModule, IonicModule, ReactiveFormsModule, ProfileRoutingModule],
 })
