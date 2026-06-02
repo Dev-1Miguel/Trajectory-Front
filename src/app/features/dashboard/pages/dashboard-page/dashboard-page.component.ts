@@ -46,6 +46,7 @@ const EMPTY_DASHBOARD_SUMMARY: DashboardResumenResponse = {
 };
 
 const ECUADOR_TIME_ZONE = 'America/Guayaquil';
+const DASHBOARD_SELECTED_MONTH_KEY = 'trajectory_dashboard_selected_month';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -86,9 +87,9 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
   isLoadingSummary = false;
   summaryError = '';
   greetingName = '';
+  selectedMonth = this.getInitialSelectedMonth();
 
   private activeWalletId: number | null = null;
-  private currentSummaryQuery: DashboardResumenQuery = {};
   private summaryRequestId = 0;
 
   ngOnInit(): void {
@@ -100,14 +101,14 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((idBilletera) => {
         this.activeWalletId = idBilletera;
-        this.loadSummary(this.currentSummaryQuery);
+        this.loadSummary();
       });
 
     this.movementStateService.movementChanged$
       .pipe(takeUntil(this.destroy$))
       .subscribe((change) => {
         if (this.shouldRefreshForMovement(change)) {
-          this.loadSummary(this.currentSummaryQuery);
+          this.loadSummary();
         }
       });
   }
@@ -117,11 +118,10 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  loadSummary(query: DashboardResumenQuery = this.currentSummaryQuery): void {
+  loadSummary(): void {
     const requestId = ++this.summaryRequestId;
-    const summaryQuery = this.withActiveWallet(query);
+    const summaryQuery = this.createSummaryQuery();
 
-    this.currentSummaryQuery = summaryQuery;
     this.isLoadingSummary = true;
     this.summaryError = '';
     this.changeDetectorRef.markForCheck();
@@ -158,6 +158,38 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
       });
   }
 
+  onMonthChange(event: Event): void {
+    const input = event.target;
+
+    if (!(input instanceof HTMLInputElement) || !this.isValidMonth(input.value)) {
+      return;
+    }
+
+    this.selectedMonth = input.value;
+    localStorage.setItem(DASHBOARD_SELECTED_MONTH_KEY, this.selectedMonth);
+    this.loadSummary();
+  }
+
+  openMonthPicker(input: HTMLInputElement): void {
+    input.focus({ preventScroll: true });
+
+    const pickerInput = input as HTMLInputElement & {
+      showPicker?: () => void;
+    };
+
+    try {
+      if (typeof pickerInput.showPicker === 'function') {
+        pickerInput.showPicker();
+        return;
+      }
+    } catch {
+      // Some browsers reject showPicker on hidden controls; the click fallback
+      // keeps the selector usable where native support is more limited.
+    }
+
+    input.click();
+  }
+
   navigateFromBottomNavigation(item: NavigationItem, event: Event): void {
     this.releaseNavigationFocus(event);
 
@@ -182,12 +214,14 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
     );
   }
 
-  private withActiveWallet(query: DashboardResumenQuery): DashboardResumenQuery {
-    const { idBilletera: _previousWalletId, ...baseQuery } = query;
+  private createSummaryQuery(): DashboardResumenQuery {
+    const query: DashboardResumenQuery = this.getMonthRange(this.selectedMonth);
 
-    return this.activeWalletId
-      ? { ...baseQuery, idBilletera: this.activeWalletId }
-      : baseQuery;
+    if (this.activeWalletId) {
+      query.idBilletera = this.activeWalletId;
+    }
+
+    return query;
   }
 
   private shouldRefreshForMovement(change: MovementChangePayload): boolean {
@@ -225,7 +259,7 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
   }
 
   private createMetricCards(resumen: DashboardResumenResponse): MetricCard[] {
-    const monthLabel = this.getCurrentMonthLabel();
+    const monthLabel = this.getSelectedMonthLabel();
 
     return [
       {
@@ -444,14 +478,61 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
     }).format(date);
   }
 
-  private getCurrentMonthLabel(): string {
+  getSelectedMonthLabel(): string {
+    const [year, month] = this.selectedMonth.split('-').map(Number);
     const label = new Intl.DateTimeFormat('es-EC', {
       timeZone: ECUADOR_TIME_ZONE,
       month: 'long',
       year: 'numeric',
-    }).format(new Date());
+    }).format(new Date(year, month - 1, 1));
 
     return label.charAt(0).toUpperCase() + label.slice(1);
+  }
+
+  private getInitialSelectedMonth(): string {
+    const savedMonth = localStorage.getItem(DASHBOARD_SELECTED_MONTH_KEY);
+
+    return savedMonth && this.isValidMonth(savedMonth)
+      ? savedMonth
+      : this.getCurrentMonthValue();
+  }
+
+  private getCurrentMonthValue(): string {
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: ECUADOR_TIME_ZONE,
+      year: 'numeric',
+      month: '2-digit',
+    }).formatToParts(new Date());
+    const year = parts.find((part) => part.type === 'year')?.value;
+    const month = parts.find((part) => part.type === 'month')?.value;
+
+    return year && month ? `${year}-${month}` : '';
+  }
+
+  private getMonthRange(selectedMonth: string): DashboardResumenQuery {
+    const [year, month] = selectedMonth.split('-').map(Number);
+    const lastDay = new Date(year, month, 0).getDate();
+
+    return {
+      fechaInicio: `${selectedMonth}-01`,
+      fechaFin: `${selectedMonth}-${String(lastDay).padStart(2, '0')}`,
+    };
+  }
+
+  private isValidMonth(value: string): boolean {
+    if (!/^\d{4}-\d{2}$/.test(value)) {
+      return false;
+    }
+
+    const [year, month] = value.split('-').map(Number);
+
+    return (
+      Number.isInteger(year) &&
+      Number.isInteger(month) &&
+      year >= 1900 &&
+      month >= 1 &&
+      month <= 12
+    );
   }
 
   releaseNavigationFocus(event?: Event): void {
