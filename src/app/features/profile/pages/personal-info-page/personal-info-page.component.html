@@ -7,6 +7,28 @@
       </div>
     </section>
 
+    <nav class="profile-navigation" aria-label="Secciones de perfil">
+      <a
+        class="profile-navigation__link"
+        routerLink="/perfil/informacion-personal"
+        routerLinkActive="profile-navigation__link--active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
+        <span>Informacion personal</span>
+      </a>
+
+      <a
+        class="profile-navigation__link"
+        routerLink="/perfil/seguridad"
+        routerLinkActive="profile-navigation__link--active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <ion-icon name="shield-checkmark-outline" aria-hidden="true"></ion-icon>
+        <span>Seguridad</span>
+      </a>
+    </nav>
+
     <section class="personal-info-card" aria-label="Datos basicos del usuario">
       <div class="personal-info-card__avatar">
         <app-profile-avatar

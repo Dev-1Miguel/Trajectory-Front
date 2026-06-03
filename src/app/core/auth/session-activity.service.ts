@@ -83,11 +83,12 @@ export class SessionActivityService implements OnDestroy {
       return;
     }
 
-    this.authService.clearSession();
     this.injector.get(WalletStateService).clearActiveWallet();
 
-    void this.router.navigate(['/auth/login'], {
-      queryParams: { sessionExpired: '1' },
+    this.authService.logout().subscribe(() => {
+      void this.router.navigate(['/auth/login'], {
+        queryParams: { sessionExpired: '1' },
+      });
     });
   }
 }

@@ -289,7 +289,7 @@ export class SecurityPageComponent implements OnInit {
     this.feedbackMessage =
       response.mensaje || 'Contrasena actualizada correctamente.';
     this.walletStateService.clearActiveWallet();
-    this.authService.logout();
+    this.authService.clearSession();
 
     void this.router.navigate(['/auth/login'], {
       queryParams: { passwordActualizada: '1' },
