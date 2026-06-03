@@ -58,9 +58,9 @@
         </label>
 
         <div class="auth-row">
-          <button class="auth-inline-link" type="button" (click)="notifyPendingRecovery()">
+          <a class="auth-inline-link" routerLink="/auth/forgot-password">
             ¿Olvidaste tu contraseña?
-          </button>
+          </a>
         </div>
 
         <ion-button class="auth-submit" expand="block" type="submit" [disabled]="form.invalid || loading">

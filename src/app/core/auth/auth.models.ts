@@ -20,6 +20,21 @@ export interface CambiarPasswordResponse {
   mensaje: string;
 }
 
+export interface ForgotPasswordResponse {
+  mensaje: string;
+}
+
+export interface ResetPasswordPayload {
+  correo: string;
+  codigo: string;
+  passwordNueva: string;
+  confirmarPasswordNueva: string;
+}
+
+export interface ResetPasswordResponse {
+  mensaje: string;
+}
+
 export interface LogoutResponse {
   mensaje?: string;
   message?: string;

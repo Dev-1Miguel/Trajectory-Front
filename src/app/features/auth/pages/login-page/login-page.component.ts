@@ -53,6 +53,12 @@ export class LoginPageComponent implements OnInit {
     if (this.route.snapshot.queryParamMap.get('passwordActualizada') === '1') {
       this.feedbackMessage =
         'Contrasena actualizada correctamente. Inicia sesion nuevamente.';
+      return;
+    }
+
+    if (this.route.snapshot.queryParamMap.get('passwordRestablecida') === '1') {
+      this.feedbackMessage =
+        'Contraseña restablecida correctamente. Inicia sesión con tu nueva contraseña.';
     }
   }
 
@@ -101,10 +107,6 @@ export class LoginPageComponent implements OnInit {
 
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
-  }
-
-  notifyPendingRecovery(): void {
-    this.feedbackMessage = 'Recuperacion de contrasena preparada para una proxima integracion.';
   }
 
   hasFieldError(fieldName: LoginField): boolean {

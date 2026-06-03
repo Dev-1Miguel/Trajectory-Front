@@ -11,10 +11,13 @@ import {
   CerrarSesionesPayload,
   CerrarSesionesResponse,
   ConsultarSesionesResponse,
+  ForgotPasswordResponse,
   LoginResponse,
   LoginRequest,
   LogoutResponse,
   RegisterPayload,
+  ResetPasswordPayload,
+  ResetPasswordResponse,
 } from './auth.models';
 
 @Injectable({ providedIn: 'root' })
@@ -45,6 +48,22 @@ export class AuthService {
 
   register(payload: RegisterPayload): Observable<unknown> {
     return this.http.post<unknown>(`${this.authUrl}/register`, payload);
+  }
+
+  forgotPassword(correo: string): Observable<ForgotPasswordResponse> {
+    return this.http.post<ForgotPasswordResponse>(
+      `${this.authUrl}/forgot-password`,
+      { correo },
+    );
+  }
+
+  resetPassword(
+    payload: ResetPasswordPayload,
+  ): Observable<ResetPasswordResponse> {
+    return this.http.post<ResetPasswordResponse>(
+      `${this.authUrl}/reset-password`,
+      payload,
+    );
   }
 
   me(): Observable<AuthUser> {
