@@ -7,10 +7,30 @@
           <p>Aqui tienes un resumen de tus finanzas</p>
         </div>
 
-        <button class="notification-button" type="button" aria-label="Ver notificaciones">
-          <ion-icon name="notifications-outline" aria-hidden="true"></ion-icon>
-          <span aria-hidden="true"></span>
-        </button>
+        <div class="month-selector-shell">
+          <button
+            class="month-selector"
+            type="button"
+            aria-label="Seleccionar mes del resumen"
+            (click)="openMonthPicker(monthInput)"
+          >
+            <span class="month-selector__icon" aria-hidden="true">
+              <ion-icon name="calendar-outline"></ion-icon>
+            </span>
+            <span class="month-selector__copy">
+              <small>Resumen</small>
+              <strong>{{ getSelectedMonthLabel() }}</strong>
+            </span>
+          </button>
+          <input
+            #monthInput
+            class="month-selector__input"
+            type="month"
+            [value]="selectedMonth"
+            aria-label="Seleccionar mes del resumen"
+            (change)="onMonthChange($event)"
+          />
+        </div>
       </header>
 
       <section class="dashboard__metrics" aria-label="Resumen financiero">

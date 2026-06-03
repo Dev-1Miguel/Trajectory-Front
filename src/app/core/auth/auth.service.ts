@@ -4,9 +4,16 @@ import { catchError, map, Observable, of, tap } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import {
-  AuthResponse,
   AuthUser,
+  AuthUserResponse,
+  CambiarPasswordPayload,
+  CambiarPasswordResponse,
+  CerrarSesionesPayload,
+  CerrarSesionesResponse,
+  ConsultarSesionesResponse,
+  LoginResponse,
   LoginRequest,
+  LogoutResponse,
   RegisterPayload,
 } from './auth.models';
 
@@ -15,47 +22,86 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly authUrl = `${environment.apiUrl}/auth`;
   private readonly tokenKey = 'trajectory_access_token';
-  private readonly refreshTokenKey = 'trajectory_refresh_token';
   private readonly userKey = 'trajectory_auth_user';
-  private readonly expiresAtKey = 'trajectory_auth_expires_at';
+  private readonly legacyExpiresAtKey = 'trajectory_auth_expires_at';
+  private readonly activeWalletKey = 'trajectory_active_wallet_id';
+  private readonly trajectoryKeyPrefix = 'trajectory_';
+  private readonly tokenKeySuffix = '_token';
   private readonly authStorageKeys = [
     this.tokenKey,
-    this.refreshTokenKey,
     this.userKey,
-    this.expiresAtKey,
+    this.legacyExpiresAtKey,
+    this.activeWalletKey,
   ];
   private sesionValidada = false;
 
-  login(correo: string, password: string): Observable<AuthResponse> {
+  login(correo: string, password: string): Observable<LoginResponse> {
     const payload: LoginRequest = { correo, password };
 
-    return this.http.post<AuthResponse>(`${this.authUrl}/login`, payload).pipe(
+    return this.http.post<LoginResponse>(`${this.authUrl}/login`, payload).pipe(
       tap((response) => this.guardarSesion(response)),
     );
   }
 
-  register(payload: RegisterPayload): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.authUrl}/register`, payload);
+  register(payload: RegisterPayload): Observable<unknown> {
+    return this.http.post<unknown>(`${this.authUrl}/register`, payload);
   }
 
   me(): Observable<AuthUser> {
-    return this.http.get<AuthResponse | AuthUser>(`${this.authUrl}/me`).pipe(
+    return this.http.get<AuthUserResponse | AuthUser>(`${this.authUrl}/me`).pipe(
       map((response) => this.normalizarUsuario(response)),
       tap((usuario) => this.guardarUsuario(usuario)),
     );
   }
 
-  logout(): void {
-    this.clearSession();
+  cambiarPassword(
+    payload: CambiarPasswordPayload,
+  ): Observable<CambiarPasswordResponse> {
+    return this.http.patch<CambiarPasswordResponse>(
+      `${this.authUrl}/password`,
+      payload,
+    );
+  }
+
+  consultarSesiones(): Observable<ConsultarSesionesResponse> {
+    return this.http.get<ConsultarSesionesResponse>(`${this.authUrl}/sesiones`);
+  }
+
+  cerrarSesiones(idSesiones: string[]): Observable<CerrarSesionesResponse> {
+    const payload: CerrarSesionesPayload = { idSesiones };
+
+    return this.http.patch<CerrarSesionesResponse>(
+      `${this.authUrl}/sesiones/cerrar`,
+      payload,
+    );
+  }
+
+  cerrarTodasSesiones(): Observable<CerrarSesionesResponse> {
+    return this.http.patch<CerrarSesionesResponse>(
+      `${this.authUrl}/sesiones/cerrar-todas`,
+      {},
+    );
+  }
+
+  logout(): Observable<LogoutResponse> {
+    return this.http.post<LogoutResponse>(
+      `${this.authUrl}/logout`,
+      {},
+    ).pipe(
+      catchError(() =>
+        of({
+          mensaje: 'Sesion cerrada localmente.',
+        }),
+      ),
+      tap(() => this.clearSession()),
+    );
   }
 
   clearSession(): void {
     this.sesionValidada = false;
 
-    for (const key of this.authStorageKeys) {
-      localStorage.removeItem(key);
-      sessionStorage.removeItem(key);
-    }
+    this.clearAuthStorage(localStorage);
+    this.clearAuthStorage(sessionStorage);
   }
 
   guardarToken(token: string): void {
@@ -82,14 +128,6 @@ export class AuthService {
     }
 
     return token.trim();
-  }
-
-  obtenerRefreshToken(): string | null {
-    const refreshToken =
-      localStorage.getItem(this.refreshTokenKey) ??
-      sessionStorage.getItem(this.refreshTokenKey);
-
-    return refreshToken?.trim() || null;
   }
 
   estaAutenticado(): boolean {
@@ -141,87 +179,47 @@ export class AuthService {
     }
   }
 
-  private guardarSesion(response: AuthResponse): void {
+  private guardarSesion(response: LoginResponse): void {
     this.clearSession();
 
-    const token = this.extraerToken(response);
-    const refreshToken = this.extraerRefreshToken(response);
-    const expiresAt = this.extraerExpiresAt(response);
+    const token = response.accessToken?.trim();
     const usuario = this.extraerUsuario(response);
 
-    if (
-      !token ||
-      this.expiresAtEstaVencido(expiresAt) ||
-      !this.tokenEsLocalmenteValido(token)
-    ) {
+    if (!token || !this.tokenEsLocalmenteValido(token)) {
       return;
     }
 
     this.guardarToken(token);
-
-    if (refreshToken) {
-      localStorage.setItem(this.refreshTokenKey, refreshToken.trim());
-    }
-
-    if (expiresAt !== null) {
-      localStorage.setItem(this.expiresAtKey, String(expiresAt));
-    }
 
     if (usuario) {
       this.guardarUsuario(usuario);
     }
   }
 
-  private extraerToken(response: AuthResponse): string | null {
-    return (
-      response.accessToken ??
-      response.token ??
-      response.data?.accessToken ??
-      response.data?.token ??
-      null
-    );
-  }
+  private extraerUsuario(
+    response: AuthUserResponse | LoginResponse,
+  ): AuthUser | null {
+    const data = 'data' in response ? response.data : undefined;
 
-  private extraerUsuario(response: AuthResponse): AuthUser | null {
     return (
       response.usuario ??
-      response.user ??
-      response.data?.usuario ??
-      response.data?.user ??
+      ('user' in response ? response.user : undefined) ??
+      data?.usuario ??
+      data?.user ??
       null
     );
   }
 
-  private normalizarUsuario(response: AuthResponse | AuthUser): AuthUser {
-    const usuario = this.extraerUsuario(response as AuthResponse);
+  private normalizarUsuario(response: AuthUserResponse | AuthUser): AuthUser {
+    const usuario = this.extraerUsuario(response as AuthUserResponse);
 
     return usuario ?? (response as AuthUser);
-  }
-
-  private extraerRefreshToken(response: AuthResponse): string | null {
-    return (
-      response.refreshToken ??
-      response.data?.refreshToken ??
-      null
-    );
-  }
-
-  private extraerExpiresAt(response: AuthResponse): number | string | null {
-    return (
-      response.expiresAt ??
-      response.data?.expiresAt ??
-      null
-    );
   }
 
   private tokenEsLocalmenteValido(token: string): boolean {
     const tokenNormalizado = token.trim();
 
     if (!tokenNormalizado) {
-      return false;
-    }
-
-    if (this.expiresAtEstaVencido(this.obtenerExpiresAt())) {
       return false;
     }
 
@@ -259,32 +257,20 @@ export class AuthService {
     }
   }
 
-  private obtenerExpiresAt(): number | string | null {
-    return (
-      localStorage.getItem(this.expiresAtKey) ??
-      sessionStorage.getItem(this.expiresAtKey)
-    );
-  }
-
-  private expiresAtEstaVencido(expiresAt: number | string | null): boolean {
-    if (expiresAt === null || expiresAt === '') {
-      return false;
+  private clearAuthStorage(storage: Storage): void {
+    for (const key of this.authStorageKeys) {
+      storage.removeItem(key);
     }
 
-    const timestamp =
-      typeof expiresAt === 'number' ? expiresAt : Number(expiresAt);
-    const expiresAtMs = Number.isNaN(timestamp)
-      ? Date.parse(String(expiresAt))
-      : this.normalizarTimestampExpiracion(timestamp);
+    for (let index = storage.length - 1; index >= 0; index -= 1) {
+      const key = storage.key(index);
 
-    if (Number.isNaN(expiresAtMs)) {
-      return false;
+      if (
+        key?.startsWith(this.trajectoryKeyPrefix) &&
+        key.endsWith(this.tokenKeySuffix)
+      ) {
+        storage.removeItem(key);
+      }
     }
-
-    return expiresAtMs <= Date.now();
-  }
-
-  private normalizarTimestampExpiracion(timestamp: number): number {
-    return timestamp < 10_000_000_000 ? timestamp * 1000 : timestamp;
   }
 }

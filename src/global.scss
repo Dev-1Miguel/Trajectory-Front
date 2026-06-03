@@ -68,3 +68,74 @@ ion-toast.movement-tip-toast::part(message) {
   font-size: 15px;
   line-height: 1.35;
 }
+
+app-personal-info-page .profile-navigation,
+app-security-page .profile-navigation {
+  display: flex;
+  gap: 6px;
+  width: min(100%, 880px);
+  margin: 0 auto 18px;
+  padding: 6px;
+  border: 1px solid #e1e7f0;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+}
+
+app-personal-info-page .profile-navigation__link,
+app-security-page .profile-navigation__link {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 42px;
+  padding: 0 12px;
+  border-radius: 6px;
+  color: #53617d;
+  font-size: 14px;
+  font-weight: 850;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  transition: background 180ms ease, color 180ms ease;
+}
+
+app-personal-info-page .profile-navigation__link ion-icon,
+app-security-page .profile-navigation__link ion-icon {
+  flex: 0 0 auto;
+  font-size: 18px;
+}
+
+app-personal-info-page .profile-navigation__link span,
+app-security-page .profile-navigation__link span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+app-personal-info-page .profile-navigation__link--active,
+app-security-page .profile-navigation__link--active {
+  color: #563ee8;
+  background: #ece9ff;
+}
+
+@media (hover: hover) {
+  app-personal-info-page .profile-navigation__link:hover,
+  app-security-page .profile-navigation__link:hover {
+    color: #563ee8;
+    background: #f3f1ff;
+  }
+}
+
+@media (max-width: 760px) {
+  app-personal-info-page .profile-navigation,
+  app-security-page .profile-navigation {
+    flex-wrap: wrap;
+  }
+
+  app-personal-info-page .profile-navigation__link,
+  app-security-page .profile-navigation__link {
+    flex-basis: 100%;
+  }
+}

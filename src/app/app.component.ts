@@ -3,6 +3,7 @@ import { Component, inject } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 
+import { SessionActivityService } from './core/auth/session-activity.service';
 import { dashboardNavigation } from './shared/constants/navigation.constants';
 
 @Component({
@@ -14,6 +15,7 @@ import { dashboardNavigation } from './shared/constants/navigation.constants';
 export class AppComponent {
   private readonly router = inject(Router);
   private readonly document = inject(DOCUMENT);
+  private readonly sessionActivityService = inject(SessionActivityService);
 
   readonly navigation = dashboardNavigation;
   isAuthRoute = false;

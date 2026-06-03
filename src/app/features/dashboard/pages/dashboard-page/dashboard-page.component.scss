@@ -46,37 +46,93 @@
   line-height: 1.4;
 }
 
-.notification-button {
+.month-selector-shell {
   position: relative;
-  display: grid;
-  place-items: center;
-  width: 46px;
-  height: 46px;
-  border: 0;
+  display: inline-block;
+}
+
+.month-selector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding: 8px 14px 8px 10px;
+  border: 1px solid #edf1f7;
   border-radius: 999px;
-  color: #5f6c86;
+  color: #151d2f;
   background: #ffffff;
   box-shadow: 0 14px 38px rgba(15, 23, 42, 0.08);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }
 
-.notification-button ion-icon {
-  font-size: 26px;
+.month-selector__icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  color: #563ee8;
+  background: #ece9ff;
 }
 
-.notification-button span {
+.month-selector__icon ion-icon {
+  font-size: 21px;
+}
+
+.month-selector__copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  text-align: left;
+}
+
+.month-selector__copy small {
+  color: #7b879c;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.month-selector__copy strong {
+  color: #151d2f;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.month-selector__input {
   position: absolute;
-  top: 9px;
-  right: 10px;
-  width: 10px;
-  height: 10px;
-  border: 2px solid #ffffff;
-  border-radius: 50%;
-  background: #e53946;
+  right: 12px;
+  bottom: 8px;
+  width: 1px;
+  height: 1px;
+  border: 0;
+  opacity: 0.01;
+  pointer-events: none;
+}
+
+.month-selector:focus-visible,
+.month-selector-shell:focus-within .month-selector {
+  border-color: #563ee8;
+  box-shadow: 0 14px 38px rgba(86, 62, 232, 0.14);
+  outline: 3px solid rgba(85, 65, 241, 0.18);
+  outline-offset: 3px;
+}
+
+@media (hover: hover) {
+  .month-selector:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.1);
+  }
 }
 
 .dashboard__metrics {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  align-items: stretch;
   gap: 24px;
   margin-bottom: 24px;
 }
@@ -120,6 +176,10 @@ app-monthly-summary,
 app-movements-list {
   display: block;
   min-width: 0;
+}
+
+app-metric-card {
+  height: 100%;
 }
 
 .dashboard__insights {
@@ -180,12 +240,23 @@ button:focus-visible {
 
 @media (max-width: 760px) {
   .dashboard__header {
-    align-items: center;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
     margin-bottom: 28px;
   }
 
   .dashboard__header h1 {
     font-size: 29px;
+  }
+
+  .month-selector-shell {
+    width: 100%;
+    max-width: 260px;
+  }
+
+  .month-selector {
+    width: 100%;
   }
 
   .primary-action {

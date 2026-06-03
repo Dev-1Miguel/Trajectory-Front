@@ -40,8 +40,19 @@ export class LoginPageComponent implements OnInit {
   feedbackMessage = '';
 
   ngOnInit(): void {
+    if (this.route.snapshot.queryParamMap.get('sessionExpired') === '1') {
+      this.feedbackMessage = 'Tu sesión finalizó por inactividad.';
+      return;
+    }
+
     if (this.route.snapshot.queryParamMap.get('registrado') === '1') {
       this.feedbackMessage = 'Cuenta creada correctamente. Inicia sesion.';
+      return;
+    }
+
+    if (this.route.snapshot.queryParamMap.get('passwordActualizada') === '1') {
+      this.feedbackMessage =
+        'Contrasena actualizada correctamente. Inicia sesion nuevamente.';
     }
   }
 
