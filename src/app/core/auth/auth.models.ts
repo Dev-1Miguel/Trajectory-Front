@@ -10,6 +10,39 @@ export interface RegisterPayload {
   confirmarPassword: string;
 }
 
+export interface CambiarPasswordPayload {
+  passwordActual: string;
+  passwordNueva: string;
+  confirmarPasswordNueva: string;
+}
+
+export interface CambiarPasswordResponse {
+  mensaje: string;
+}
+
+export interface LogoutResponse {
+  mensaje?: string;
+  message?: string;
+}
+
+export interface SesionActiva {
+  [key: string]: unknown;
+}
+
+export interface ConsultarSesionesResponse {
+  sesiones?: SesionActiva[];
+  data?: SesionActiva[];
+}
+
+export interface CerrarSesionesPayload {
+  idSesiones: string[];
+}
+
+export interface CerrarSesionesResponse {
+  mensaje?: string;
+  message?: string;
+}
+
 export interface AuthUser {
   id?: number | string;
   nombreCompleto?: string;
@@ -17,18 +50,15 @@ export interface AuthUser {
   [key: string]: unknown;
 }
 
-export interface AuthResponse {
-  accessToken?: string;
-  token?: string;
-  refreshToken?: string;
-  expiresAt?: number | string;
+export interface LoginResponse {
+  accessToken: string;
+  usuario: AuthUser;
+}
+
+export interface AuthUserResponse {
   user?: AuthUser;
   usuario?: AuthUser;
   data?: {
-    accessToken?: string;
-    token?: string;
-    refreshToken?: string;
-    expiresAt?: number | string;
     user?: AuthUser;
     usuario?: AuthUser;
     [key: string]: unknown;

@@ -99,10 +99,16 @@ export class DashboardSidebarComponent {
       return;
     }
 
+    if (action === 'security') {
+      void this.router.navigateByUrl('/perfil/seguridad');
+      return;
+    }
+
     if (action === 'logout') {
       this.walletStateService.clearActiveWallet();
-      this.authService.logout();
-      void this.router.navigateByUrl('/auth/login');
+      this.authService.logout().subscribe(() => {
+        void this.router.navigateByUrl('/auth/login');
+      });
     }
   }
 
