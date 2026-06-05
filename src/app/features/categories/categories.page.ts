@@ -56,7 +56,7 @@ export class CategoriesPage implements OnInit, OnDestroy {
     { label: 'Movimientos', icon: 'swap-horizontal-outline', route: '/movimientos' },
     { label: 'Categor\u00edas', icon: 'pricetags-outline', route: '/categorias', active: true },
     { label: 'Billeteras', icon: 'wallet-outline', route: '/billeteras' },
-    { label: 'Reportes', icon: 'bar-chart-outline' },
+    { label: 'Reportes', icon: 'bar-chart-outline', route: '/reportes' },
     { label: 'Configuracion', icon: 'settings-outline' },
   ];
 

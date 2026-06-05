@@ -1,0 +1,219 @@
+<ion-content [fullscreen]="true">
+  <main class="reports-page">
+    <section class="reports-heading" aria-labelledby="reports-title">
+      <div>
+        <h1 id="reports-title">REPORTES</h1>
+        <p>Consulta y descarga reportes mensuales de tus movimientos.</p>
+      </div>
+    </section>
+
+    <section class="reports-card reports-filters" aria-label="Filtros de reporte">
+      <header class="card-header">
+        <div>
+          <strong>Filtros</strong>
+          <span>Periodo y alcance del reporte</span>
+        </div>
+        <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+      </header>
+
+      <form class="filters-form" [formGroup]="form" (ngSubmit)="loadReports()" novalidate>
+        <label class="field">
+          <span>Fecha inicio</span>
+          <input class="text-control" type="date" formControlName="fechaInicio" />
+        </label>
+
+        <label class="field">
+          <span>Fecha fin</span>
+          <input class="text-control" type="date" formControlName="fechaFin" />
+        </label>
+
+        <label class="field">
+          <span>Billetera</span>
+          <select class="text-control select-control" formControlName="idBilletera">
+            <option [ngValue]="0">Todas</option>
+            <option
+              *ngFor="let wallet of wallets; trackBy: trackByWallet"
+              [ngValue]="wallet.idBilletera"
+            >
+              {{ wallet.nombre }}{{ wallet.esPrincipal ? ' (principal)' : '' }}
+            </option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Tipo movimiento</span>
+          <select class="text-control select-control" formControlName="tipoMovimiento">
+            <option
+              *ngFor="let type of movementTypes"
+              [ngValue]="type.value"
+            >
+              {{ type.label }}
+            </option>
+          </select>
+        </label>
+
+        <div class="filters-actions">
+          <button class="primary-button" type="submit" [disabled]="loading">
+            <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+            <span>{{ loading ? 'Consultando...' : 'Buscar' }}</span>
+          </button>
+          <button
+            class="secondary-button"
+            type="button"
+            [disabled]="downloading"
+            (click)="downloadPdf()"
+          >
+            <ion-icon name="download-outline" aria-hidden="true"></ion-icon>
+            <span>{{ downloading ? 'Descargando...' : 'Descargar PDF' }}</span>
+          </button>
+        </div>
+      </form>
+
+      <p *ngIf="hasDateRangeError()" class="form-message form-message--error">
+        La fecha inicio no puede ser posterior a la fecha fin.
+      </p>
+    </section>
+
+    <p *ngIf="errorMessage" class="reports-feedback reports-feedback--error" aria-live="polite">
+      <ion-icon name="warning-outline" aria-hidden="true"></ion-icon>
+      <span>{{ errorMessage }}</span>
+    </p>
+
+    <section class="summary-grid" aria-label="Resumen del reporte">
+      <article class="summary-card summary-card--income">
+        <span class="summary-card__icon" aria-hidden="true">
+          <ion-icon name="download-outline"></ion-icon>
+        </span>
+        <small>Ingresos</small>
+        <strong>{{ formatCurrency(summary.totalIngresos) }}</strong>
+      </article>
+
+      <article class="summary-card summary-card--expense">
+        <span class="summary-card__icon" aria-hidden="true">
+          <ion-icon name="arrow-up-outline"></ion-icon>
+        </span>
+        <small>Gastos</small>
+        <strong>{{ formatCurrency(summary.totalGastos) }}</strong>
+      </article>
+
+      <article class="summary-card summary-card--balance">
+        <span class="summary-card__icon" aria-hidden="true">
+          <ion-icon name="wallet-outline"></ion-icon>
+        </span>
+        <small>Balance</small>
+        <strong>{{ formatCurrency(summary.balance) }}</strong>
+      </article>
+
+      <article class="summary-card summary-card--count">
+        <span class="summary-card__icon" aria-hidden="true">
+          <ion-icon name="list-outline"></ion-icon>
+        </span>
+        <small>Movimientos</small>
+        <strong>{{ summary.cantidadMovimientos }}</strong>
+      </article>
+    </section>
+
+    <section class="reports-card movements-card" aria-label="Movimientos del reporte">
+      <header class="card-header">
+        <div>
+          <strong>Movimientos</strong>
+          <span>Detalle del periodo seleccionado</span>
+        </div>
+        <button class="icon-button" type="button" aria-label="Recargar reporte" (click)="loadReports()">
+          <ion-icon name="refresh-outline" aria-hidden="true"></ion-icon>
+        </button>
+      </header>
+
+      <div *ngIf="loading" class="reports-state">
+        <ion-icon name="sync-outline" aria-hidden="true"></ion-icon>
+        <strong>Cargando reporte...</strong>
+      </div>
+
+      <div *ngIf="!loading && !errorMessage && movements.length === 0" class="reports-state">
+        <ion-icon name="document-text-outline" aria-hidden="true"></ion-icon>
+        <strong>No hay movimientos para los filtros seleccionados.</strong>
+      </div>
+
+      <div *ngIf="!loading && movements.length > 0" class="table-shell">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Tipo</th>
+              <th>Categoria</th>
+              <th>Billetera</th>
+              <th>Titulo</th>
+              <th>Descripcion / Notas</th>
+              <th>Monto</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let movement of movements; trackBy: trackByMovement">
+              <td>{{ movement.fechaMovimiento }}</td>
+              <td>
+                <span class="movement-type" [ngClass]="'movement-type--' + movement.tone">
+                  {{ movement.tipoMovimiento }}
+                </span>
+              </td>
+              <td>{{ movement.categoria }}</td>
+              <td>{{ movement.billetera }}</td>
+              <td>{{ movement.titulo }}</td>
+              <td>{{ movement.descripcion }}</td>
+              <td>
+                <strong class="movement-amount" [ngClass]="'movement-amount--' + movement.tone">
+                  {{ movement.monto }}
+                </strong>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div *ngIf="!loading && movements.length > 0" class="movement-cards">
+        <article
+          *ngFor="let movement of movements; trackBy: trackByMovement"
+          class="movement-card"
+        >
+          <header>
+            <span class="movement-type" [ngClass]="'movement-type--' + movement.tone">
+              {{ movement.tipoMovimiento }}
+            </span>
+            <strong class="movement-amount" [ngClass]="'movement-amount--' + movement.tone">
+              {{ movement.monto }}
+            </strong>
+          </header>
+          <h2>{{ movement.titulo }}</h2>
+          <p>{{ movement.descripcion }}</p>
+          <dl>
+            <div>
+              <dt>Fecha</dt>
+              <dd>{{ movement.fechaMovimiento }}</dd>
+            </div>
+            <div>
+              <dt>Categoria</dt>
+              <dd>{{ movement.categoria }}</dd>
+            </div>
+            <div>
+              <dt>Billetera</dt>
+              <dd>{{ movement.billetera }}</dd>
+            </div>
+          </dl>
+        </article>
+      </div>
+    </section>
+
+    <nav class="bottom-navigation" aria-label="Navegacion inferior">
+      <button
+        *ngFor="let item of bottomNavigation"
+        class="bottom-navigation__item"
+        [class.bottom-navigation__item--active]="item.active"
+        type="button"
+        (pointerdown)="releaseNavigationFocus($event)"
+        (click)="navigateFromBottomNavigation(item, $event)"
+      >
+        <ion-icon [name]="item.icon" aria-hidden="true"></ion-icon>
+        <span>{{ item.label }}</span>
+      </button>
+    </nav>
+  </main>
+</ion-content>

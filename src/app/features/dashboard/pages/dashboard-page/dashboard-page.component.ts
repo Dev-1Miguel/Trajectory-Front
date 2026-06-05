@@ -75,7 +75,7 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
     { label: 'Inicio', icon: 'home-outline', route: '/home', active: true },
     { label: 'Movimientos', icon: 'swap-horizontal-outline', route: '/movimientos' },
     { label: 'Billeteras', icon: 'wallet-outline', route: '/billeteras' },
-    { label: 'Reportes', icon: 'bar-chart-outline' },
+    { label: 'Reportes', icon: 'bar-chart-outline', route: '/reportes' },
     { label: 'Configuracion', icon: 'settings-outline' },
   ];
   metrics: MetricCard[] = [];

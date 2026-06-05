@@ -50,7 +50,7 @@ export class WalletsPage implements OnInit, OnDestroy {
     { label: 'Movimientos', icon: 'swap-horizontal-outline', route: '/movimientos' },
     { label: 'Categorias', icon: 'pricetags-outline', route: '/categorias' },
     { label: 'Billeteras', icon: 'wallet-outline', route: '/billeteras', active: true },
-    { label: 'Reportes', icon: 'bar-chart-outline' },
+    { label: 'Reportes', icon: 'bar-chart-outline', route: '/reportes' },
     { label: 'Configuracion', icon: 'settings-outline' },
   ];
 
