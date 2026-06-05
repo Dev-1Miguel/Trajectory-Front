@@ -89,6 +89,9 @@ export class SecurityPageComponent implements OnInit {
     { validators: passwordChangeValidator },
   );
 
+  showPasswordActual = false;
+  showPasswordNueva = false;
+  showConfirmarPasswordNueva = false;
   loading = false;
   feedbackMessage = '';
   errorMessage = '';
@@ -191,6 +194,18 @@ export class SecurityPageComponent implements OnInit {
     }
 
     return '';
+  }
+
+  togglePasswordActualVisibility(): void {
+    this.showPasswordActual = !this.showPasswordActual;
+  }
+
+  togglePasswordNuevaVisibility(): void {
+    this.showPasswordNueva = !this.showPasswordNueva;
+  }
+
+  toggleConfirmarPasswordNuevaVisibility(): void {
+    this.showConfirmarPasswordNueva = !this.showConfirmarPasswordNueva;
   }
 
   loadSessions(): void {

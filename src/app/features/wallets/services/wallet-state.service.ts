@@ -7,6 +7,7 @@ import {
   map,
 } from 'rxjs';
 
+import { AuthService } from '../../../core/auth/auth.service';
 import { WalletApiRecord } from '../models/wallet.models';
 import {
   WalletsApiResult,
@@ -24,6 +25,7 @@ type ActiveWalletState = ActiveWallet | null | undefined;
 
 @Injectable({ providedIn: 'root' })
 export class WalletStateService {
+  private readonly authService = inject(AuthService);
   private readonly walletsApiService = inject(WalletsApiService);
   private readonly storageKey = 'trajectory_active_wallet_id';
   private readonly walletsSubject = new BehaviorSubject<ActiveWallet[]>([]);
@@ -52,10 +54,22 @@ export class WalletStateService {
   readonly loading$ = this.loadingSubject.asObservable();
 
   constructor() {
-    this.refreshWallets();
+    if (this.authService.estaAutenticado()) {
+      this.refreshWallets();
+    }
   }
 
   refreshWallets(): void {
+    const requestToken = this.authService.obtenerToken();
+
+    if (!requestToken) {
+      this.pendingRefresh = false;
+      this.loadingSubject.next(false);
+      this.walletsSubject.next([]);
+      this.activeWalletSubject.next(null);
+      return;
+    }
+
     if (this.loadInProgress) {
       this.pendingRefresh = true;
       return;
@@ -78,7 +92,14 @@ export class WalletStateService {
         }),
       )
       .subscribe({
-        next: (response) => this.syncWallets(response),
+        next: (response) => {
+          if (this.authService.obtenerToken() !== requestToken) {
+            this.pendingRefresh = true;
+            return;
+          }
+
+          this.syncWallets(response);
+        },
         error: () => {
           this.walletsSubject.next([]);
           this.activeWalletSubject.next(null);
@@ -120,29 +141,23 @@ export class WalletStateService {
       return;
     }
 
-    const savedWalletId = this.getSavedWalletId();
-    const savedWallet = savedWalletId
-      ? wallets.find((wallet) => wallet.idBilletera === savedWalletId)
-      : undefined;
-    const currentWallet = this.getCurrentWallet(wallets);
-    const nextWallet =
-      savedWallet ??
-      currentWallet ??
-      wallets.find((wallet) => wallet.esPrincipal) ??
-      wallets[0];
+    const nextWallet = this.resolveActiveWallet(wallets);
 
     this.persistActiveWalletId(nextWallet.idBilletera);
     this.activeWalletSubject.next(nextWallet);
   }
 
-  private getCurrentWallet(wallets: ActiveWallet[]): ActiveWallet | undefined {
-    const currentWallet = this.activeWalletSubject.value;
-
-    return currentWallet
-      ? wallets.find(
-          (wallet) => wallet.idBilletera === currentWallet.idBilletera,
-        )
+  private resolveActiveWallet(wallets: ActiveWallet[]): ActiveWallet {
+    const savedWalletId = this.getSavedWalletId();
+    const savedWallet = savedWalletId
+      ? wallets.find((wallet) => wallet.idBilletera === savedWalletId)
       : undefined;
+
+    return (
+      savedWallet ??
+      wallets.find((wallet) => wallet.esPrincipal) ??
+      wallets[0]
+    );
   }
 
   private toActiveWallets(response: WalletsApiResult): ActiveWallet[] {

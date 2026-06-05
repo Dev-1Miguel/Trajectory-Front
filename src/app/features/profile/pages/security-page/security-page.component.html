@@ -45,14 +45,25 @@
           <div class="form-grid">
             <label class="field field--wide">
               <span>Contrasena actual</span>
-              <input
+              <span
                 class="field__control"
                 [class.field__control--invalid]="hasFieldError('passwordActual')"
-                formControlName="passwordActual"
-                type="password"
-                autocomplete="current-password"
-                placeholder="Ingresa tu contrasena actual"
-              />
+              >
+                <input
+                  formControlName="passwordActual"
+                  [type]="showPasswordActual ? 'text' : 'password'"
+                  autocomplete="current-password"
+                  placeholder="Ingresa tu contrasena actual"
+                />
+                <button
+                  class="field__toggle"
+                  type="button"
+                  [attr.aria-label]="showPasswordActual ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                  (click)="togglePasswordActualVisibility()"
+                >
+                  <ion-icon [name]="showPasswordActual ? 'eye-off-outline' : 'eye-outline'" aria-hidden="true"></ion-icon>
+                </button>
+              </span>
               <small *ngIf="hasFieldError('passwordActual')" class="field__error">
                 Ingresa tu contrasena actual.
               </small>
@@ -60,14 +71,25 @@
 
             <label class="field">
               <span>Nueva contrasena</span>
-              <input
+              <span
                 class="field__control"
                 [class.field__control--invalid]="hasFieldError('passwordNueva') || hasSamePassword()"
-                formControlName="passwordNueva"
-                type="password"
-                autocomplete="new-password"
-                placeholder="Minimo 8 caracteres"
-              />
+              >
+                <input
+                  formControlName="passwordNueva"
+                  [type]="showPasswordNueva ? 'text' : 'password'"
+                  autocomplete="new-password"
+                  placeholder="Minimo 8 caracteres"
+                />
+                <button
+                  class="field__toggle"
+                  type="button"
+                  [attr.aria-label]="showPasswordNueva ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                  (click)="togglePasswordNuevaVisibility()"
+                >
+                  <ion-icon [name]="showPasswordNueva ? 'eye-off-outline' : 'eye-outline'" aria-hidden="true"></ion-icon>
+                </button>
+              </span>
               <small
                 *ngIf="hasFieldError('passwordNueva') || hasSamePassword()"
                 class="field__error"
@@ -78,14 +100,25 @@
 
             <label class="field">
               <span>Confirmar nueva contrasena</span>
-              <input
+              <span
                 class="field__control"
                 [class.field__control--invalid]="hasFieldError('confirmarPasswordNueva') || hasPasswordMismatch()"
-                formControlName="confirmarPasswordNueva"
-                type="password"
-                autocomplete="new-password"
-                placeholder="Repite la nueva contrasena"
-              />
+              >
+                <input
+                  formControlName="confirmarPasswordNueva"
+                  [type]="showConfirmarPasswordNueva ? 'text' : 'password'"
+                  autocomplete="new-password"
+                  placeholder="Repite la nueva contrasena"
+                />
+                <button
+                  class="field__toggle"
+                  type="button"
+                  [attr.aria-label]="showConfirmarPasswordNueva ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                  (click)="toggleConfirmarPasswordNuevaVisibility()"
+                >
+                  <ion-icon [name]="showConfirmarPasswordNueva ? 'eye-off-outline' : 'eye-outline'" aria-hidden="true"></ion-icon>
+                </button>
+              </span>
               <small
                 *ngIf="hasFieldError('confirmarPasswordNueva') || hasPasswordMismatch()"
                 class="field__error"

@@ -12,6 +12,7 @@ import { finalize, switchMap } from 'rxjs';
 
 import { AuthService } from '../../../../core/auth/auth.service';
 import { ApiErrorService } from '../../../../core/http/api-error.service';
+import { WalletStateService } from '../../../wallets/services/wallet-state.service';
 
 type LoginField = 'email' | 'password';
 
@@ -26,6 +27,7 @@ export class LoginPageComponent implements OnInit {
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly authService = inject(AuthService);
   private readonly apiErrorService = inject(ApiErrorService);
+  private readonly walletStateService = inject(WalletStateService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
@@ -90,6 +92,7 @@ export class LoginPageComponent implements OnInit {
             return;
           }
 
+          this.walletStateService.refreshWallets();
           void this.router.navigateByUrl(this.obtenerRutaPosteriorAlLogin());
         },
         error: (error: unknown) => {

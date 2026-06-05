@@ -27,14 +27,12 @@ export class AuthService {
   private readonly tokenKey = 'trajectory_access_token';
   private readonly userKey = 'trajectory_auth_user';
   private readonly legacyExpiresAtKey = 'trajectory_auth_expires_at';
-  private readonly activeWalletKey = 'trajectory_active_wallet_id';
   private readonly trajectoryKeyPrefix = 'trajectory_';
   private readonly tokenKeySuffix = '_token';
   private readonly authStorageKeys = [
     this.tokenKey,
     this.userKey,
     this.legacyExpiresAtKey,
-    this.activeWalletKey,
   ];
   private sesionValidada = false;
 
