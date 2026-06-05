@@ -8,7 +8,7 @@
     </section>
 
     <section class="wallets-layout" aria-label="Panel de billeteras">
-      <article class="wallets-board">
+      <article class="wallets-board" [class.wallets-board--mobile-hidden]="mobileCreateMode || !!editingWallet">
         <header class="card-header">
           <div>
             <strong>Billeteras</strong>
@@ -29,6 +29,10 @@
           <strong>{{ walletError }}</strong>
           <button type="button" (click)="loadWallets()">Reintentar</button>
         </div>
+
+        <p *ngIf="formSuccess" class="form-message form-message--success form-message--mobile-list">
+          {{ formSuccess }}
+        </p>
 
         <div *ngIf="!isLoadingWallets && !walletError && wallets.length === 0" class="wallet-state">
           <ion-icon name="wallet-outline" aria-hidden="true"></ion-icon>
@@ -90,17 +94,21 @@
         </ul>
       </article>
 
-      <aside class="wallet-form-card" aria-labelledby="wallet-form-title">
+      <aside
+        class="wallet-form-card"
+        [class.wallet-form-card--mobile-open]="mobileCreateMode || !!editingWallet"
+        aria-labelledby="wallet-form-title"
+      >
         <header class="form-header">
           <div>
             <h2 id="wallet-form-title">{{ formTitle }}</h2>
             <p>{{ editingWallet ? 'Actualiza los datos de la billetera.' : 'Crea un espacio financiero.' }}</p>
           </div>
           <button
-            *ngIf="editingWallet"
+            *ngIf="editingWallet || mobileCreateMode"
             class="icon-button"
             type="button"
-            aria-label="Cancelar edicion"
+            aria-label="Cancelar formulario"
             (click)="cancelEdit()"
           >
             <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
@@ -150,6 +158,16 @@
         </form>
       </aside>
     </section>
+
+    <button
+      *ngIf="!mobileCreateMode && !editingWallet"
+      class="floating-action"
+      type="button"
+      aria-label="Crear billetera"
+      (click)="openMobileCreate()"
+    >
+      <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+    </button>
 
     <nav class="bottom-navigation" aria-label="Navegacion inferior">
       <button

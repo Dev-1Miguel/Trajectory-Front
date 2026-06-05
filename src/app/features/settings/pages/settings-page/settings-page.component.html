@@ -1,0 +1,121 @@
+<ion-content [fullscreen]="true">
+  <main class="settings-page">
+    <section class="settings-heading" aria-labelledby="settings-title">
+      <div>
+        <h1 id="settings-title">CONFIGURACION</h1>
+        <p>Ajusta tu perfil y preferencias de la aplicacion.</p>
+      </div>
+    </section>
+
+    <section class="settings-card" aria-label="Opciones de configuracion">
+      <button
+        class="settings-option ion-activatable"
+        type="button"
+        (click)="navigateTo('/perfil/informacion-personal')"
+      >
+        <span class="settings-option__icon">
+          <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
+        </span>
+        <span class="settings-option__copy">
+          <strong>Mi perfil</strong>
+          <small>Informacion personal</small>
+        </span>
+        <ion-icon class="settings-option__chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+        <ion-ripple-effect></ion-ripple-effect>
+      </button>
+
+      <button
+        class="settings-option ion-activatable"
+        type="button"
+        (click)="navigateTo('/billeteras')"
+      >
+        <span class="settings-option__icon settings-option__icon--wallet">
+          <ion-icon name="wallet-outline" aria-hidden="true"></ion-icon>
+        </span>
+        <span
+          *ngIf="{
+            wallet: activeWallet$ | async,
+            loading: loadingWallets$ | async
+          } as walletState"
+          class="settings-option__copy"
+        >
+          <strong>Billetera activa</strong>
+          <small>{{ walletState.wallet?.nombre || (walletState.loading ? 'Cargando...' : 'Sin billetera activa') }}</small>
+        </span>
+        <ion-icon class="settings-option__chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+        <ion-ripple-effect></ion-ripple-effect>
+      </button>
+
+      <div
+        class="settings-option settings-option--toggle ion-activatable"
+        role="switch"
+        tabindex="0"
+        [attr.aria-checked]="darkModeEnabled"
+        (click)="toggleDarkMode($event)"
+        (keydown.enter)="toggleDarkMode($event)"
+        (keydown.space)="toggleDarkMode($event)"
+      >
+        <span class="settings-option__icon settings-option__icon--dark">
+          <ion-icon name="moon-outline" aria-hidden="true"></ion-icon>
+        </span>
+        <span class="settings-option__copy">
+          <strong>Modo oscuro</strong>
+          <small>Preferencia visual</small>
+        </span>
+        <ion-toggle
+          aria-label="Activar modo oscuro"
+          [checked]="darkModeEnabled"
+          (click)="onDarkModeToggleClick($event)"
+          (ionChange)="onDarkModeToggleChange($event)"
+        ></ion-toggle>
+        <ion-ripple-effect></ion-ripple-effect>
+      </div>
+
+      <button
+        class="settings-option ion-activatable"
+        type="button"
+        (click)="navigateTo('/perfil/seguridad')"
+      >
+        <span class="settings-option__icon settings-option__icon--security">
+          <ion-icon name="shield-checkmark-outline" aria-hidden="true"></ion-icon>
+        </span>
+        <span class="settings-option__copy">
+          <strong>Seguridad</strong>
+          <small>Contrasena y sesiones</small>
+        </span>
+        <ion-icon class="settings-option__chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+        <ion-ripple-effect></ion-ripple-effect>
+      </button>
+
+      <button
+        class="settings-option settings-option--danger ion-activatable"
+        type="button"
+        (click)="logout()"
+      >
+        <span class="settings-option__icon settings-option__icon--danger">
+          <ion-icon name="log-out-outline" aria-hidden="true"></ion-icon>
+        </span>
+        <span class="settings-option__copy">
+          <strong>Cerrar sesion</strong>
+          <small>Salir de Trayectoria</small>
+        </span>
+        <ion-icon class="settings-option__chevron" name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+        <ion-ripple-effect></ion-ripple-effect>
+      </button>
+    </section>
+
+    <nav class="bottom-navigation" aria-label="Navegacion inferior">
+      <button
+        *ngFor="let item of bottomNavigation"
+        class="bottom-navigation__item"
+        [class.bottom-navigation__item--active]="item.active"
+        type="button"
+        (pointerdown)="releaseNavigationFocus($event)"
+        (click)="navigateFromBottomNavigation(item, $event)"
+      >
+        <ion-icon [name]="item.icon" aria-hidden="true"></ion-icon>
+        <span>{{ item.label }}</span>
+      </button>
+    </nav>
+  </main>
+</ion-content>

@@ -111,13 +111,43 @@
   font-size: 31px;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 768px) {
   .metric-card {
-    min-height: 246px;
-    padding: 22px 16px 20px;
+    min-height: 148px;
+    padding: 16px;
+    border-radius: 8px;
+  }
+
+  .metric-card__icon {
+    width: 42px;
+    height: 42px;
+  }
+
+  .metric-card__icon ion-icon {
+    font-size: 23px;
   }
 
   .metric-card__amount {
-    font-size: clamp(32px, 10vw, 42px);
+    margin: 18px 0 5px;
+    font-size: clamp(26px, 8vw, 34px);
+  }
+
+  .metric-card__subtitle {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 420px) {
+  .metric-card {
+    min-height: 136px;
+    padding: 14px;
+  }
+
+  .metric-card h2 {
+    font-size: 14px;
+  }
+
+  .metric-card__amount {
+    font-size: clamp(24px, 8vw, 30px);
   }
 }
