@@ -10,8 +10,10 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
   const router = inject(Router);
   const token = authService.obtenerToken();
   const omitirAuthorization =
+    request.url.endsWith('/auth/forgot-password') ||
     request.url.endsWith('/auth/login') ||
-    request.url.endsWith('/auth/register');
+    request.url.endsWith('/auth/register') ||
+    request.url.endsWith('/auth/reset-password');
   const authRequest = token && !omitirAuthorization
     ? request.clone({
         setHeaders: {

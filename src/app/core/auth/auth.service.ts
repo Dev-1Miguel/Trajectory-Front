@@ -11,10 +11,13 @@ import {
   CerrarSesionesPayload,
   CerrarSesionesResponse,
   ConsultarSesionesResponse,
+  ForgotPasswordResponse,
   LoginResponse,
   LoginRequest,
   LogoutResponse,
   RegisterPayload,
+  ResetPasswordPayload,
+  ResetPasswordResponse,
 } from './auth.models';
 
 @Injectable({ providedIn: 'root' })
@@ -24,14 +27,12 @@ export class AuthService {
   private readonly tokenKey = 'trajectory_access_token';
   private readonly userKey = 'trajectory_auth_user';
   private readonly legacyExpiresAtKey = 'trajectory_auth_expires_at';
-  private readonly activeWalletKey = 'trajectory_active_wallet_id';
   private readonly trajectoryKeyPrefix = 'trajectory_';
   private readonly tokenKeySuffix = '_token';
   private readonly authStorageKeys = [
     this.tokenKey,
     this.userKey,
     this.legacyExpiresAtKey,
-    this.activeWalletKey,
   ];
   private sesionValidada = false;
 
@@ -45,6 +46,22 @@ export class AuthService {
 
   register(payload: RegisterPayload): Observable<unknown> {
     return this.http.post<unknown>(`${this.authUrl}/register`, payload);
+  }
+
+  forgotPassword(correo: string): Observable<ForgotPasswordResponse> {
+    return this.http.post<ForgotPasswordResponse>(
+      `${this.authUrl}/forgot-password`,
+      { correo },
+    );
+  }
+
+  resetPassword(
+    payload: ResetPasswordPayload,
+  ): Observable<ResetPasswordResponse> {
+    return this.http.post<ResetPasswordResponse>(
+      `${this.authUrl}/reset-password`,
+      payload,
+    );
   }
 
   me(): Observable<AuthUser> {
