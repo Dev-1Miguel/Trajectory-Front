@@ -225,12 +225,29 @@ ion-content.auth-content {
   margin-top: -3px;
 }
 
+.auth-row--between {
+  justify-content: space-between;
+}
+
 .auth-inline-link {
   padding: 2px 0;
   color: #563ee8;
   background: transparent;
   font-size: 13px;
   font-weight: 850;
+  text-decoration: none;
+}
+
+.auth-step-note {
+  margin: -2px 0 0;
+  padding: 11px 13px;
+  border: 1px solid #dbe3ef;
+  border-radius: 8px;
+  color: #53617d;
+  background: #f8fafd;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
 }
 
 .auth-submit {
@@ -263,6 +280,16 @@ ion-content.auth-content {
   font-size: 13px;
   font-weight: 750;
   line-height: 1.35;
+}
+
+.auth-card > .auth-feedback {
+  margin-top: 16px;
+}
+
+.auth-feedback--error {
+  border-color: #f4c9cd;
+  color: #b4232f;
+  background: #fff7f7;
 }
 
 .auth-switch {

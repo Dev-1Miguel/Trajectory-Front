@@ -12,6 +12,7 @@ import { finalize, switchMap } from 'rxjs';
 
 import { AuthService } from '../../../../core/auth/auth.service';
 import { ApiErrorService } from '../../../../core/http/api-error.service';
+import { WalletStateService } from '../../../wallets/services/wallet-state.service';
 
 type LoginField = 'email' | 'password';
 
@@ -26,6 +27,7 @@ export class LoginPageComponent implements OnInit {
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly authService = inject(AuthService);
   private readonly apiErrorService = inject(ApiErrorService);
+  private readonly walletStateService = inject(WalletStateService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
@@ -53,6 +55,12 @@ export class LoginPageComponent implements OnInit {
     if (this.route.snapshot.queryParamMap.get('passwordActualizada') === '1') {
       this.feedbackMessage =
         'Contrasena actualizada correctamente. Inicia sesion nuevamente.';
+      return;
+    }
+
+    if (this.route.snapshot.queryParamMap.get('passwordRestablecida') === '1') {
+      this.feedbackMessage =
+        'Contraseña restablecida correctamente. Inicia sesión con tu nueva contraseña.';
     }
   }
 
@@ -84,6 +92,7 @@ export class LoginPageComponent implements OnInit {
             return;
           }
 
+          this.walletStateService.refreshWallets();
           void this.router.navigateByUrl(this.obtenerRutaPosteriorAlLogin());
         },
         error: (error: unknown) => {
@@ -101,10 +110,6 @@ export class LoginPageComponent implements OnInit {
 
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
-  }
-
-  notifyPendingRecovery(): void {
-    this.feedbackMessage = 'Recuperacion de contrasena preparada para una proxima integracion.';
   }
 
   hasFieldError(fieldName: LoginField): boolean {
