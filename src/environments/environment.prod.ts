@@ -1,4 +1,4 @@
-const apiUrl = 'http://localhost:3000/api';
+const apiUrl = 'https://trajectory-back.onrender.com/api';
 
 export const environment = {
   production: true,
