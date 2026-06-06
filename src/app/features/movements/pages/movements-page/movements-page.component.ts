@@ -121,7 +121,7 @@ export class MovementsPageComponent implements OnInit, OnDestroy {
     { label: 'Categor\u00edas', icon: 'pricetags-outline', route: '/categorias' },
     { label: 'Billeteras', icon: 'wallet-outline', route: '/billeteras' },
     { label: 'Reportes', icon: 'bar-chart-outline', route: '/reportes' },
-    { label: 'Configuracion', icon: 'settings-outline' },
+    { label: 'Configuracion', icon: 'settings-outline', route: '/configuracion' },
   ];
 
   movementGroups: MovementGroup[] = [];

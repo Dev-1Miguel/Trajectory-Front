@@ -1,0 +1,13 @@
+<nav class="bottom-navigation" aria-label="Navegacion inferior">
+  <button
+    *ngFor="let item of navigation"
+    class="bottom-navigation__item"
+    [class.bottom-navigation__item--active]="isActive(item)"
+    type="button"
+    (pointerdown)="releaseFocus($event)"
+    (click)="navigate(item, $event)"
+  >
+    <ion-icon [name]="item.icon" aria-hidden="true"></ion-icon>
+    <span>{{ item.label }}</span>
+  </button>
+</nav>

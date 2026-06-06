@@ -317,10 +317,6 @@
   background: #f8fafd;
 }
 
-.session-item--inactive {
-  opacity: 0.62;
-}
-
 .session-item--current {
   border-color: #b9eadf;
   background: #f0fdfa;
@@ -451,7 +447,7 @@
 
 @media (max-width: 760px) {
   .security-page {
-    padding: 28px 18px;
+    padding: 28px 18px calc(80px + env(safe-area-inset-bottom));
   }
 
   .security-card {
@@ -499,7 +495,7 @@
 
 @media (max-width: 420px) {
   .security-page {
-    padding: 24px 14px;
+    padding: 24px 14px calc(80px + env(safe-area-inset-bottom));
   }
 
   .security-heading h1 {
