@@ -8,7 +8,7 @@
     </section>
 
     <section class="categories-layout" aria-label="Panel de categorias">
-      <article class="categories-board">
+      <article class="categories-board" [class.categories-board--mobile-hidden]="mobileCreateMode || !!editingCategory">
         <header class="card-header">
           <div>
             <strong>Categorias</strong>
@@ -32,6 +32,10 @@
             {{ filter.label }}
           </button>
         </div>
+
+        <p *ngIf="formSuccess" class="form-message form-message--success form-message--mobile-list">
+          {{ formSuccess }}
+        </p>
 
         <div *ngIf="isLoadingCategories" class="category-state">
           <ion-icon name="sync-outline" aria-hidden="true"></ion-icon>
@@ -94,17 +98,21 @@
         </ul>
       </article>
 
-      <aside class="category-form-card" aria-labelledby="category-form-title">
+      <aside
+        class="category-form-card"
+        [class.category-form-card--mobile-open]="mobileCreateMode || !!editingCategory"
+        aria-labelledby="category-form-title"
+      >
         <header class="form-header">
           <div>
             <h2 id="category-form-title">{{ formTitle }}</h2>
             <p>{{ editingCategory ? 'Actualiza los datos de la categoria.' : 'Crea una categoria para movimientos.' }}</p>
           </div>
           <button
-            *ngIf="editingCategory"
+            *ngIf="editingCategory || mobileCreateMode"
             class="icon-button"
             type="button"
-            aria-label="Cancelar edicion"
+            aria-label="Cancelar formulario"
             (click)="cancelEdit()"
           >
             <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
@@ -141,6 +149,16 @@
         </form>
       </aside>
     </section>
+
+    <button
+      *ngIf="!mobileCreateMode && !editingCategory"
+      class="floating-action"
+      type="button"
+      aria-label="Crear categoria"
+      (click)="openMobileCreate()"
+    >
+      <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+    </button>
 
     <nav class="bottom-navigation" aria-label="Navegacion inferior">
       <button

@@ -50,8 +50,8 @@ export class WalletsPage implements OnInit, OnDestroy {
     { label: 'Movimientos', icon: 'swap-horizontal-outline', route: '/movimientos' },
     { label: 'Categorias', icon: 'pricetags-outline', route: '/categorias' },
     { label: 'Billeteras', icon: 'wallet-outline', route: '/billeteras', active: true },
-    { label: 'Reportes', icon: 'bar-chart-outline' },
-    { label: 'Configuracion', icon: 'settings-outline' },
+    { label: 'Reportes', icon: 'bar-chart-outline', route: '/reportes' },
+    { label: 'Configuracion', icon: 'settings-outline', route: '/configuracion' },
   ];
 
   readonly form = this.formBuilder.group({
@@ -62,6 +62,7 @@ export class WalletsPage implements OnInit, OnDestroy {
 
   wallets: WalletViewModel[] = [];
   editingWallet?: WalletViewModel;
+  mobileCreateMode = false;
   isLoadingWallets = false;
   isSavingWallet = false;
   walletError = '';
@@ -112,6 +113,7 @@ export class WalletsPage implements OnInit, OnDestroy {
 
   editWallet(wallet: WalletViewModel): void {
     this.editingWallet = wallet;
+    this.mobileCreateMode = true;
     this.formError = '';
     this.formSuccess = '';
     this.form.setValue({
@@ -119,10 +121,25 @@ export class WalletsPage implements OnInit, OnDestroy {
       descripcion: wallet.descripcion,
       esPrincipal: wallet.esPrincipal,
     });
+    this.scrollToTop();
+  }
+
+  openMobileCreate(): void {
+    this.editingWallet = undefined;
+    this.mobileCreateMode = true;
+    this.formError = '';
+    this.formSuccess = '';
+    this.form.reset({
+      nombre: '',
+      descripcion: '',
+      esPrincipal: false,
+    });
+    this.scrollToTop();
   }
 
   cancelEdit(): void {
     this.editingWallet = undefined;
+    this.mobileCreateMode = false;
     this.formError = '';
     this.formSuccess = '';
     this.form.reset({
@@ -275,6 +292,21 @@ export class WalletsPage implements OnInit, OnDestroy {
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
     }
+  }
+
+  private scrollToTop(): void {
+    window.requestAnimationFrame(() => {
+      const content = document.querySelector('ion-content') as
+        | (HTMLElement & { scrollToTop?: (duration?: number) => Promise<void> })
+        | null;
+
+      if (content?.scrollToTop) {
+        void content.scrollToTop(180);
+        return;
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   }
 
   private toPayload(): WalletPayload | null {

@@ -73,8 +73,21 @@ const routes: Routes = [
   },
   {
     path: 'reportes',
-    redirectTo: 'home',
-    pathMatch: 'full',
+    canMatch: [authMatchGuard],
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./features/reports/reports.module').then(
+        (m) => m.ReportsModule,
+      ),
+  },
+  {
+    path: 'configuracion',
+    canMatch: [authMatchGuard],
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./features/settings/settings.module').then(
+        (m) => m.SettingsModule,
+      ),
   },
   {
     path: '',

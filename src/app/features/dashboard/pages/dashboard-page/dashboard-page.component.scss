@@ -238,16 +238,24 @@ button:focus-visible {
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 768px) {
+  .dashboard__main {
+    padding: 28px 16px calc(104px + env(safe-area-inset-bottom));
+  }
+
   .dashboard__header {
     align-items: flex-start;
     flex-direction: column;
-    gap: 16px;
-    margin-bottom: 28px;
+    gap: 14px;
+    margin-bottom: 20px;
   }
 
   .dashboard__header h1 {
-    font-size: 29px;
+    font-size: 28px;
+  }
+
+  .dashboard__header p {
+    font-size: 15px;
   }
 
   .month-selector-shell {
@@ -263,9 +271,31 @@ button:focus-visible {
     min-height: 64px;
     font-size: 19px;
   }
+
+  .dashboard__metrics {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .dashboard__insights {
+    margin: 16px 0 18px;
+  }
+
+  .dashboard-state {
+    align-items: flex-start;
+    margin-bottom: 16px;
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+
+  .dashboard-state button {
+    font-size: 14px;
+    white-space: nowrap;
+  }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 768px) {
   .dashboard {
     display: block;
     min-height: 100vh;
@@ -277,16 +307,11 @@ button:focus-visible {
   .dashboard__main {
     width: 100%;
     max-width: none;
-    padding: 34px 20px 96px;
+    padding: 28px 16px calc(104px + env(safe-area-inset-bottom));
   }
 
   .dashboard__header {
     margin-top: 0;
-  }
-
-  .dashboard__metrics {
-    grid-template-columns: 1fr;
-    gap: 18px;
   }
 
   .dashboard__bottom-navigation {
@@ -296,9 +321,9 @@ button:focus-visible {
     left: 0;
     z-index: 10;
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    min-height: calc(66px + env(safe-area-inset-bottom));
-    padding-bottom: env(safe-area-inset-bottom);
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    min-height: calc(68px + env(safe-area-inset-bottom));
+    padding: 6px 6px calc(6px + env(safe-area-inset-bottom));
     border-top: 1px solid #edf1f7;
     background: rgba(255, 255, 255, 0.96);
     backdrop-filter: blur(14px);
@@ -310,7 +335,9 @@ button:focus-visible {
     align-content: center;
     gap: 4px;
     min-width: 0;
+    min-height: 54px;
     border: 0;
+    border-radius: 8px;
     color: #687592;
     background: transparent;
     font-size: 10px;
@@ -323,5 +350,32 @@ button:focus-visible {
 
   .dashboard__bottom-navigation-item--active {
     color: #563ee8;
+    background: #ece9ff;
+  }
+
+  .dashboard__bottom-navigation-item span {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 420px) {
+  .dashboard__main {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  .dashboard__header h1 {
+    font-size: 26px;
+  }
+
+  .month-selector-shell {
+    max-width: none;
+  }
+
+  .dashboard__bottom-navigation-item {
+    font-size: 9px;
   }
 }

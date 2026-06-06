@@ -74,9 +74,10 @@ export class DashboardPageComponent implements OnInit, OnDestroy {
   readonly bottomNavigation: NavigationItem[] = [
     { label: 'Inicio', icon: 'home-outline', route: '/home', active: true },
     { label: 'Movimientos', icon: 'swap-horizontal-outline', route: '/movimientos' },
+    { label: 'Categorias', icon: 'pricetags-outline', route: '/categorias' },
     { label: 'Billeteras', icon: 'wallet-outline', route: '/billeteras' },
-    { label: 'Reportes', icon: 'bar-chart-outline' },
-    { label: 'Configuracion', icon: 'settings-outline' },
+    { label: 'Reportes', icon: 'bar-chart-outline', route: '/reportes' },
+    { label: 'Configuracion', icon: 'settings-outline', route: '/configuracion' },
   ];
   metrics: MetricCard[] = [];
   categories: CategoryExpense[] = [];

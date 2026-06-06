@@ -166,19 +166,31 @@ $space-4: 32px;
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
+  .category-cards {
+    gap: $space-2;
+  }
+
   .panel {
-    padding: $space-3;
+    min-height: 0;
+    padding: $space-2;
+    border-radius: 8px;
+  }
+
+  .category-panel h2,
+  .expense-panel h2 {
+    margin-bottom: $space-2;
+    font-size: 18px;
   }
 
   .category-panel__body {
     grid-template-columns: 1fr;
-    gap: $space-3;
+    gap: $space-2;
   }
 
   .donut {
     justify-self: center;
-    max-width: 220px;
+    max-width: 168px;
   }
 
   .donut__label {
@@ -196,13 +208,37 @@ $space-4: 32px;
 
   .expense-chart {
     gap: $space-2;
+    min-height: 168px;
   }
 
   .expense-bar__track {
     max-width: 42px;
+    height: 128px;
   }
 
   .expense-bar__label {
     font-size: 13px;
+  }
+
+  .expense-empty {
+    min-height: 128px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 420px) {
+  .legend li {
+    column-gap: $space-1;
+    font-size: 14px;
+  }
+
+  .expense-chart {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: $space-2;
+  }
+
+  .expense-bar__amount,
+  .expense-bar__label {
+    font-size: 12px;
   }
 }
