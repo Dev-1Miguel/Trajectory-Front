@@ -104,18 +104,6 @@
       </button>
     </section>
 
-    <nav class="bottom-navigation" aria-label="Navegacion inferior">
-      <button
-        *ngFor="let item of bottomNavigation"
-        class="bottom-navigation__item"
-        [class.bottom-navigation__item--active]="item.active"
-        type="button"
-        (pointerdown)="releaseNavigationFocus($event)"
-        (click)="navigateFromBottomNavigation(item, $event)"
-      >
-        <ion-icon [name]="item.icon" aria-hidden="true"></ion-icon>
-        <span>{{ item.label }}</span>
-      </button>
-    </nav>
+    <app-bottom-navigation></app-bottom-navigation>
   </main>
 </ion-content>
