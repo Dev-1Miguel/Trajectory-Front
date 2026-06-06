@@ -119,7 +119,7 @@
 
 @media (max-width: 760px) {
   .personal-info-page {
-    padding: 28px 18px;
+    padding: 28px 18px calc(80px + env(safe-area-inset-bottom));
   }
 
   .personal-info-card {
@@ -144,7 +144,7 @@
 
 @media (max-width: 420px) {
   .personal-info-page {
-    padding: 24px 14px;
+    padding: 24px 14px calc(80px + env(safe-area-inset-bottom));
   }
 
   .personal-info-heading h1 {

@@ -1,0 +1,206 @@
+:host {
+  display: block;
+  min-height: 100%;
+  color: #111827;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.settings-page {
+  min-height: 100vh;
+  padding: 34px clamp(18px, 4vw, 48px);
+  background: #f6f8fc;
+}
+
+.settings-heading,
+.settings-card {
+  width: min(100%, 640px);
+  margin: 0 auto;
+}
+
+.settings-heading {
+  margin-bottom: 20px;
+}
+
+.settings-heading h1 {
+  margin: 0 0 6px;
+  color: #111827;
+  font-size: clamp(28px, 3vw, 38px);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: 0;
+}
+
+.settings-heading p {
+  margin: 0;
+  color: #53617d;
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.settings-card {
+  overflow: hidden;
+  border: 1px solid #e1e7f0;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
+}
+
+.settings-option {
+  position: relative;
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 72px;
+  padding: 14px 18px;
+  border: 0;
+  border-bottom: 1px solid #edf1f7;
+  color: #111827;
+  background: #ffffff;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+}
+
+.settings-option:last-child {
+  border-bottom: 0;
+}
+
+.settings-option__icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  color: #563ee8;
+  background: #ece9ff;
+}
+
+.settings-option__icon ion-icon {
+  font-size: 22px;
+}
+
+.settings-option__icon--wallet {
+  color: #0f8f4d;
+  background: #dcfce7;
+}
+
+.settings-option__icon--dark {
+  color: #2d72d8;
+  background: #e6f0ff;
+}
+
+.settings-option__icon--security {
+  color: #7c3aed;
+  background: #f1e8ff;
+}
+
+.settings-option__icon--danger {
+  color: #b4232f;
+  background: #fee2e2;
+}
+
+.settings-option__copy {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.settings-option__copy strong {
+  overflow: hidden;
+  color: #111827;
+  font-size: 15px;
+  font-weight: 850;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-option__copy small {
+  overflow: hidden;
+  color: #6b768b;
+  font-size: 13px;
+  font-weight: 720;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-option__chevron {
+  color: #9aa6ba;
+  font-size: 20px;
+}
+
+.settings-option--danger .settings-option__copy strong,
+.settings-option--danger .settings-option__chevron {
+  color: #b4232f;
+}
+
+.settings-option ion-toggle {
+  --handle-background-checked: #ffffff;
+  --track-background-checked: #563ee8;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible,
+.settings-option--toggle:focus-visible {
+  outline: 3px solid rgba(86, 62, 232, 0.28);
+  outline-offset: -3px;
+}
+
+@media (max-width: 768px) {
+  .settings-page {
+    padding: 24px 16px calc(80px + env(safe-area-inset-bottom));
+  }
+
+  .settings-heading {
+    margin-bottom: 16px;
+  }
+
+  .settings-heading h1 {
+    font-size: 28px;
+  }
+
+  .settings-heading p {
+    font-size: 15px;
+  }
+
+  .settings-card {
+    border-radius: 8px;
+  }
+
+  .settings-option {
+    grid-template-columns: 46px minmax(0, 1fr) auto;
+    min-height: 70px;
+    padding: 13px 14px;
+  }
+
+  .settings-option__icon {
+    width: 40px;
+    height: 40px;
+  }
+
+}
+
+@media (max-width: 420px) {
+  .settings-page {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  .settings-option {
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+    gap: 12px;
+  }
+
+  .settings-option__copy strong {
+    font-size: 14px;
+  }
+
+  .settings-option__copy small {
+    font-size: 12px;
+  }
+
+}

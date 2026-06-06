@@ -316,7 +316,10 @@ export class SecurityPageComponent implements OnInit {
 
     this.sessions = sessions
       .map((session) => this.toSessionViewModel(session))
-      .filter((session): session is SessionViewModel => session !== null);
+      .filter(
+        (session): session is SessionViewModel =>
+          session !== null && session.activa,
+      );
     this.selectedSessionIds.clear();
   }
 
@@ -360,8 +363,12 @@ export class SecurityPageComponent implements OnInit {
       return null;
     }
 
-    const activa =
-      this.getBoolean(session, ['activa', 'Activa', 'ACTIVA']) ?? true;
+    const fechaExpiracion = this.getText(session, [
+      'fechaExpiracion',
+      'FechaExpiracion',
+      'FECHAEXPIRACION',
+    ]);
+    const activa = this.isActiveSession(session, fechaExpiracion);
 
     return {
       idSesion,
@@ -372,13 +379,7 @@ export class SecurityPageComponent implements OnInit {
       fechaInicio: this.formatDate(
         this.getText(session, ['fechaInicio', 'FechaInicio', 'FECHAINICIO']),
       ),
-      fechaExpiracion: this.formatDate(
-        this.getText(session, [
-          'fechaExpiracion',
-          'FechaExpiracion',
-          'FECHAEXPIRACION',
-        ]),
-      ),
+      fechaExpiracion: this.formatDate(fechaExpiracion),
       estado: activa ? 'Activa' : 'Inactiva',
       activa,
       esActual:
@@ -391,6 +392,53 @@ export class SecurityPageComponent implements OnInit {
           'SesionActual',
         ]) ?? false,
     };
+  }
+
+  private isActiveSession(session: SesionActiva, expirationDate: string): boolean {
+    if (this.isExpiredSession(expirationDate)) {
+      return false;
+    }
+
+    const activeFlag = this.getBoolean(session, ['activa', 'Activa', 'ACTIVA']);
+
+    if (activeFlag !== undefined) {
+      return activeFlag;
+    }
+
+    const status = this.normalizeStatus(
+      this.getText(session, [
+        'estado',
+        'Estado',
+        'ESTADO',
+        'estadoSesion',
+        'EstadoSesion',
+        'ESTADOSESION',
+      ]),
+    );
+
+    if (['activa', 'activo', 'active', 'vigente', 'abierta', 'abierto'].includes(status)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  private isExpiredSession(value: string): boolean {
+    if (!value) {
+      return false;
+    }
+
+    const date = new Date(value);
+
+    return !Number.isNaN(date.getTime()) && date.getTime() <= Date.now();
+  }
+
+  private normalizeStatus(value: string): string {
+    return value
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
   }
 
   private getText(session: SesionActiva, keys: string[]): string {

@@ -102,7 +102,7 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
     { label: 'Categorias', icon: 'pricetags-outline', route: '/categorias' },
     { label: 'Billeteras', icon: 'wallet-outline', route: '/billeteras' },
     { label: 'Reportes', icon: 'bar-chart-outline', route: '/reportes', active: true },
-    { label: 'Configuracion', icon: 'settings-outline' },
+    { label: 'Configuracion', icon: 'settings-outline', route: '/configuracion' },
   ];
 
   readonly form = this.formBuilder.group(

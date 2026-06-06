@@ -81,6 +81,15 @@ const routes: Routes = [
       ),
   },
   {
+    path: 'configuracion',
+    canMatch: [authMatchGuard],
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./features/settings/settings.module').then(
+        (m) => m.SettingsModule,
+      ),
+  },
+  {
     path: '',
     redirectTo: 'auth/login',
     pathMatch: 'full'

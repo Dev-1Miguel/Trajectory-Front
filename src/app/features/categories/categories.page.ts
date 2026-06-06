@@ -57,7 +57,7 @@ export class CategoriesPage implements OnInit, OnDestroy {
     { label: 'Categor\u00edas', icon: 'pricetags-outline', route: '/categorias', active: true },
     { label: 'Billeteras', icon: 'wallet-outline', route: '/billeteras' },
     { label: 'Reportes', icon: 'bar-chart-outline', route: '/reportes' },
-    { label: 'Configuracion', icon: 'settings-outline' },
+    { label: 'Configuracion', icon: 'settings-outline', route: '/configuracion' },
   ];
 
   readonly form = this.formBuilder.group({
@@ -69,6 +69,7 @@ export class CategoriesPage implements OnInit, OnDestroy {
   filteredCategories: CategoryViewModel[] = [];
   selectedFilter: CategoryFilterId = 'all';
   editingCategory?: CategoryViewModel;
+  mobileCreateMode = false;
   isLoadingCategories = false;
   isSavingCategory = false;
   categoryError = '';
@@ -124,16 +125,31 @@ export class CategoriesPage implements OnInit, OnDestroy {
 
   editCategory(category: CategoryViewModel): void {
     this.editingCategory = category;
+    this.mobileCreateMode = true;
     this.formError = '';
     this.formSuccess = '';
     this.form.setValue({
       nombre: category.nombre,
       tipoMovimiento: category.tipoMovimiento,
     });
+    this.scrollToTop();
+  }
+
+  openMobileCreate(): void {
+    this.editingCategory = undefined;
+    this.mobileCreateMode = true;
+    this.formError = '';
+    this.formSuccess = '';
+    this.form.reset({
+      nombre: '',
+      tipoMovimiento: '',
+    });
+    this.scrollToTop();
   }
 
   cancelEdit(): void {
     this.editingCategory = undefined;
+    this.mobileCreateMode = false;
     this.formError = '';
     this.formSuccess = '';
     this.form.reset({
@@ -249,6 +265,21 @@ export class CategoriesPage implements OnInit, OnDestroy {
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
     }
+  }
+
+  private scrollToTop(): void {
+    window.requestAnimationFrame(() => {
+      const content = document.querySelector('ion-content') as
+        | (HTMLElement & { scrollToTop?: (duration?: number) => Promise<void> })
+        | null;
+
+      if (content?.scrollToTop) {
+        void content.scrollToTop(180);
+        return;
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   }
 
   private toPayload(): CategoryPayload | null {

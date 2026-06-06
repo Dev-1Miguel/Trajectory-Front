@@ -188,14 +188,13 @@
         </div>
 
         <div *ngIf="!sessionsLoading && sessions.length === 0" class="sessions-empty">
-          No hay sesiones activas para mostrar.
+          No hay sesiones activas.
         </div>
 
         <div *ngIf="!sessionsLoading && sessions.length > 0" class="sessions-list">
           <article
             *ngFor="let session of sessions; trackBy: trackBySession"
             class="session-item"
-            [class.session-item--inactive]="!session.activa"
             [class.session-item--current]="session.esActual"
           >
             <label class="session-item__selector">
@@ -260,5 +259,7 @@
         </div>
       </div>
     </section>
+
+    <app-bottom-navigation></app-bottom-navigation>
   </main>
 </ion-content>
