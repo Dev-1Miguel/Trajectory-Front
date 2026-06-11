@@ -64,8 +64,13 @@
         </div>
 
         <ion-button class="auth-submit" expand="block" type="submit" [disabled]="form.invalid || loading">
+          <ion-spinner *ngIf="loading" name="crescent" aria-hidden="true"></ion-spinner>
           {{ loading ? 'Ingresando...' : 'Iniciar sesión' }}
         </ion-button>
+
+        <p *ngIf="showSlowLoginMessage" class="auth-wait-message" aria-live="polite">
+          Estamos preparando tu sesión, puede tardar unos segundos.
+        </p>
 
         <p *ngIf="feedbackMessage" class="auth-feedback" aria-live="polite">
           {{ feedbackMessage }}

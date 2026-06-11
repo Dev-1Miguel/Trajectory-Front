@@ -265,9 +265,28 @@ ion-content.auth-content {
   text-transform: none;
 }
 
+.auth-submit ion-spinner {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  color: currentColor;
+}
+
 .auth-submit[disabled] {
   --box-shadow: none;
   opacity: 0.58;
+}
+
+.auth-wait-message {
+  margin: -2px 0 0;
+  padding: 10px 12px;
+  border: 1px solid #dbe3ef;
+  border-radius: 8px;
+  color: #53617d;
+  background: #f8fafd;
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.35;
 }
 
 .auth-feedback {
