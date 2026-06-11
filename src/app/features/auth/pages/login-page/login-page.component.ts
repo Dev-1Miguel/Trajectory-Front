@@ -39,7 +39,9 @@ export class LoginPageComponent implements OnInit {
 
   showPassword = false;
   loading = false;
+  showSlowLoginMessage = false;
   feedbackMessage = '';
+  private slowLoginTimeout?: ReturnType<typeof setTimeout>;
 
   ngOnInit(): void {
     if (this.route.snapshot.queryParamMap.get('sessionExpired') === '1') {
@@ -73,13 +75,24 @@ export class LoginPageComponent implements OnInit {
     const value = this.form.getRawValue();
 
     this.loading = true;
+    this.showSlowLoginMessage = false;
     this.feedbackMessage = '';
+    this.slowLoginTimeout = setTimeout(() => {
+      if (!this.loading) {
+        return;
+      }
+
+      this.showSlowLoginMessage = true;
+      this.changeDetectorRef.markForCheck();
+    }, 3000);
 
     this.authService
       .login(value.email.trim(), value.password)
       .pipe(
         switchMap(() => this.authService.validarSesionActiva()),
         finalize(() => {
+          this.clearSlowLoginTimeout();
+          this.showSlowLoginMessage = false;
           this.loading = false;
           this.changeDetectorRef.markForCheck();
         }),
@@ -130,6 +143,15 @@ export class LoginPageComponent implements OnInit {
     }
 
     return '';
+  }
+
+  private clearSlowLoginTimeout(): void {
+    if (!this.slowLoginTimeout) {
+      return;
+    }
+
+    clearTimeout(this.slowLoginTimeout);
+    this.slowLoginTimeout = undefined;
   }
 
   private obtenerRutaPosteriorAlLogin(): string {
