@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'Trajectory-Front',
+  appId: 'com.trajectory.app',
+  appName: 'Trajectory',
   webDir: 'www'
 };
 
