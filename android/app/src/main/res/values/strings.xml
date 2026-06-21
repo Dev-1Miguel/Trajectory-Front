@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Trajectory</string>
+    <string name="title_activity_main">Trajectory</string>
+    <string name="package_name">com.trajectory.app</string>
+    <string name="custom_url_scheme">com.trajectory.app</string>
+</resources>
